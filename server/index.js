@@ -4,9 +4,16 @@ const cors = require("cors");
 const { userRouter } = require("./routes/user.route");
 const express = require('express');
 const { kpiRouter } = require("./routes/kpi.route");
+const { projectRouter } = require("./routes/project.route");
+const { chatRouter } = require("./routes/chat.route");
+const { messageRouter } = require("./routes/message.route");
 require('dotenv').config();
 const stripe = require('stripe')('sk_test_51Nj141DOsxvBXmWQCtDMZyeOlTOtsuDaI2nyz4up6j1YG4nKEvM6SF29Wi0sobNyTich0CStl4iBBC23gvBKyLPc00NX0Rtxnm');
-
+const io = require("socket.io")(8800, {
+    cors: {
+        origin: "http://localhost:3000",
+    },
+});
 const app = express();
 
 
@@ -20,13 +27,54 @@ app.use((req, res, next) => {
         'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     );
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-
     next();
 });
 
 
 app.use("/user", userRouter)
 app.use("/kpi", kpiRouter)
+app.use("/project", projectRouter)
+app.use("/chat", chatRouter)
+app.use("/message", messageRouter)
+
+// Initialize an empty Map to track active users
+const activeUsers = new Map();
+
+io.on("connection", (socket) => {
+    // Add new user
+    socket.on("new-user-add", (newUserId) => {
+        // Check if user is not added previously
+        if (!activeUsers.has(socket.id)) {
+            activeUsers.set(socket.id, { userId: newUserId });
+            console.log("New User Connected", activeUsers);
+        }
+        // Send all active users to the new user
+        io.emit("get-users", Array.from(activeUsers.values()));
+    });
+
+    socket.on("disconnect", () => {
+        // Remove user from active users
+        if (activeUsers.has(socket.id)) {
+            activeUsers.delete(socket.id);
+            console.log("User Disconnected", activeUsers);
+            // Send all active users to all users
+            io.emit("get-users", Array.from(activeUsers.values()));
+        }
+    });
+
+    // Send a message to a specific user
+    socket.on("send-message", (data) => {
+        const { receiverId } = data;
+        for (const [socketId, user] of activeUsers.entries()) {
+            if (user.userId === receiverId) {
+                io.to(socketId).emit("receive-message", data);
+                break; // Stop searching once the user is found and the message is sent
+            }
+        }
+    });
+});
+
+
 
 
 app.use(express.static('public'));
@@ -74,6 +122,7 @@ app.post('/create-checkout-session', async (req, res) => {
 app.get("/", (req, res) => {
     res.send("hello world")
 })
+
 
 
 

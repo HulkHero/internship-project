@@ -5,13 +5,15 @@ import Login from './pages/Login';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Company from './pages/company/Company';
 import AddMember from './pages/company/AddMember';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import AddKpi from './pages/Kpi/AddKpi';
-import AddProjects from './pages/company/AddProjects';
+import AddProject from './pages/addProject/addProject';
+import Dashboard from './pages/dashboard/Dashboard';
+import Chat from './pages/chat/Chat';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 const queryClient = new QueryClient()
 
 function App() {
- 
   return (
     <QueryClientProvider client={queryClient}>
   <Router>
@@ -21,14 +23,17 @@ function App() {
       <Route path="/signup/success" element={<PaymentSuccess/>}/>
       <Route path="login" element={<Login/>}/>
       <Route path="*" element={<div>404</div>}/>
-       
-     <Route path="/company" element={<Company/>}>
+      <Route path="/company" element={<Company/>}>
         <Route index path="addMember" element={<AddMember/>}/>
+        <Route path="dashboard" element={<Dashboard/>}/>
         <Route path="addKpi" element={<AddKpi/>}/>
-        <Route path="addProject" element={<AddProjects/>}/>
+        <Route path="chat" element={<Chat/>} />
+        <Route path="addProject" element={<AddProject/>}/>
     </Route>
     </Routes>    
   </Router>
+  <ReactQueryDevtools initialIsOpen={false} />
+  
   </QueryClientProvider>
   );
 }

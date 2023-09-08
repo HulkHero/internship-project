@@ -110,7 +110,8 @@ const AddKpi = () => {
                         return(
                             <div className='relative flex'>
                             { errors?.kpis &&  errors.kpis[index] ? <span className='absolute top-2 left-2 h-2 w-2 rounded-full bg-red-700  '/>:null}
-                            <button type="button"  className={`${toggle===item.id ?" bg-green-600 ":"bg-gray-300"} ml-2 px-3 py-1 rounded-xl`} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} >Kpi</button>
+                            <button type={"button"} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} className="btn  btn-circle">Kpi</button>
+                            {/* <button type="button"  className={`${toggle===item.id ?" bg-green-600 ":"bg-gray-300"} ml-2 px-3 py-1 rounded-xl`} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} >Kpi</button> */}
                             </div>
                         )
                     })
@@ -127,7 +128,7 @@ const AddKpi = () => {
                         )
                     })
              }
-            <button type="submit">Submit</button>
+            <button type="submit" className='btn btn-primary btn-sm btn-wide' >Submit</button>
             </form>
         </div>
     </div>

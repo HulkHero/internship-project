@@ -16,6 +16,8 @@ const authentication = async (req, res, next) => {
         const employee = await User.findById(decodedToken._id);
         if (employee.tokenString === randomString) {
             console.log("user is authenticated");
+            req.companyName = decodedToken.companyName;
+            req._id = decodedToken._id;
             req.systemRole = role;
             next();
         }

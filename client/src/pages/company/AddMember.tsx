@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import { set, useForm } from 'react-hook-form';
-import { loadStripe } from '@stripe/stripe-js';
+import { useForm } from 'react-hook-form';
+
 import axios from 'axios';
 import { useAppSelector } from '../../redux/hooks';
 import { authSelector } from '../../redux/slices/authSlice';
 import axiosInstance from '../../utils/interceptor';
-import {GrAddCircle} from "react-icons/gr"
 import Button from '../../components/Button';
 import {AiOutlineUserAdd} from "react-icons/ai"
 import CustomInput from '../../components/InputFields/CustomInput';
 import { emailValidation, passwordValidation, textValidation } from '../../utils/InputValidations';
+import useFetch from '../../hooks/useFetch';
 interface IAddMember{
     firstName:string,
     lastName:string,
@@ -20,12 +20,16 @@ interface IAddMember{
     techRole:string[]
 }
 
+interface IRole{
+    roles:string[]
+}
+
 
 const AddMember = () => {
      const {_id,token}=useAppSelector(authSelector)
      const [error,setError]=React.useState<string>("")
      const [loading,setLoading]=React.useState<boolean>(false)
-     const [roles,setRoles]=React.useState<string[]>([])
+    //  const [roles,setRoles]=React.useState<string[]>([])
  
      const {companyName} = JSON.parse(localStorage.getItem("user")||"")
     const form = useForm<IAddMember>({
@@ -34,17 +38,19 @@ const AddMember = () => {
             lastName: "",
             email: "",
             password: "",
-            companyName: "",
+            companyName: companyName,
             systemRole:"employee",
             techRole:[""]
-        }
+        },
+        mode:"all"
     });
 
+    
+
     const { register, handleSubmit, formState } = form;
-    const { errors } = formState;
+    const { errors,isDirty,isValid ,isSubmitting} = formState;
     const onSubmit =async (data: IAddMember) =>{
       setLoading(true)
-
       axios.post(`http://localhost:5000/user/addMember/${_id}`,data,{
         headers:{
           "Content-Type":"application/json",
@@ -58,23 +64,18 @@ const AddMember = () => {
         setError(err.response.data.msg)
         setLoading(false)
       })
-
-      
-       console.log(data,"data")
     }
+    const {data:roles,error:errorMessage,isLoading}=useFetch<string[]>({endPoint:"/kpi/get",params:`?companyName=${companyName}`})
 
-    useEffect(() => {
-        axiosInstance.get(`/kpi/get?companyName=${companyName}`).then((res)=>{
-        setRoles(res.data.roles)
+    // useEffect(() => {
+    //     axiosInstance.get(`/kpi/get?companyName=${companyName}`).then((res)=>{
+    //     setRoles(res.data.roles)
 
-        }).catch((err)=>{
-            setError(err.response.data.msg)
-            console.log(err)
-        })
-    },[companyName])
-    
-    
-
+    //     }).catch((err)=>{
+    //         setError(err.response.data.msg)
+    //         console.log(err)
+    //     })
+    // },[companyName])
     return (
         <div className=" flex  justify-center w-full">
             <div className="bg-white p-4 rounded-md  w-full">
@@ -85,9 +86,8 @@ const AddMember = () => {
                         <CustomInput<IAddMember> title={"Last Name"} type={"text"} rules={textValidation("Last Name")} name={`lastName`} placeholder={"Enter Last Name"} errors={errors?.lastName} register={register}/>
                         <CustomInput<IAddMember> title={"Email"} type={"email"} rules={emailValidation()} name={`email`} placeholder={"Enter Email"} errors={errors?.email} register={register}/>
                         <CustomInput<IAddMember> title={"Password"} type={"password"} rules={passwordValidation()} name={`password`} placeholder={"Enter Password"} errors={errors?.password} register={register}/>
-                        <CustomInput<IAddMember> title={"Company Name"} type={"text"} rules={textValidation("Company Name")} name={`companyName`} placeholder={"Enter Company Name"} errors={errors?.companyName} register={register}/>
-                        <div className="flex space-x-2">
-                            <label htmlFor="systemRole" className="w-1/3 flex items-center justify-end font-semibold">
+                        <div className="">
+                            <label htmlFor="systemRole" className="w-1/3 flex items-center font-bold">
                                 Role
                             </label>
                             <select
@@ -105,12 +105,11 @@ const AddMember = () => {
                             <br></br>
                             <p>{errors.systemRole?.message}</p>
                         </div>
-                        <div className="flex space-x-2">
-                            <label htmlFor="techRole" className="w-1/3 flex items-center justify-end font-semibold">
+                        <div className="">
+                            <label htmlFor="techRole" className=" flex items-center  font-bold">
                                 Tech Role
                             </label>
                             <select
-                              
                                 id="techRole"
                                 placeholder='Select Role'
                                 {...register("techRole",{
@@ -121,9 +120,9 @@ const AddMember = () => {
                                 className="border rounded p-2 w-2/3"
                             >
                                 {
-                                    roles.map((role:string)=>{
+                                   roles && roles.map((role:string,index:number)=>{
                                         return(
-                                            <option value={role}>{role}</option>
+                                            <option key={index} value={role}>{role}</option>
                                         )
                                     })
                                 }
@@ -131,9 +130,8 @@ const AddMember = () => {
                             <br></br>
                             <p>{errors.techRole?.message}</p>
                         </div>
-                        
                         <div className="flex justify-center text-white">
-                           <Button type="submit" text="Add Member" icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>} />
+                           <Button type="submit" disabled={!isDirty|| !isValid  || isSubmitting}  text="Add Member" icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>} />
                         </div>
                     </div>
                 </form>

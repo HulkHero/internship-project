@@ -7,6 +7,8 @@ import { addUser, authSelector } from "../redux/slices/authSlice";
 import { userSignUp } from '../types';
 import { error } from 'console';
 import axios from 'axios';
+import CustomInput from '../components/InputFields/CustomInput';
+import { emailValidation, passwordValidation, textValidation } from '../utils/InputValidations';
 
 interface ILogin {
     email: string;
@@ -18,7 +20,7 @@ interface ILogin {
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const form = useForm<userSignUp>({
+  const form = useForm<ILogin>({
       defaultValues: {
           email: "",
           password: "",
@@ -51,49 +53,9 @@ const Login = () => {
       </div>
       <div className='flex flex-col gap-6'>
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4 space-y-5'>
-        <div className="flex relative flex-row justify-center   space-x-2 ">
-                            <label htmlFor="email" className=" flex w-1/4 justify-center items-center font-semibold">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                {...register("email",{
-                                    required:"Email is required",
-                                    pattern:{
-                                         //eslint-disable-next-line
-                                        value:  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                        message: "Invalid email format",
-                                    }
-                                })}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p className='absolute -bottom-5'>{errors.email?.message}</p>
-                        </div>
-                        <div className="flex relative justify-center space-x-2">
-                            <label htmlFor="password" className="flex w-1/4 justify-center items-center font-semibold">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                {...register("password",{
-                                    required:"Password is required",
-                                    validate:{
-                                      length:(value)=>{
-                                        if(value.trim().length<6){
-                                          return "Password must be greater than 6 characters"
-                                        }  
-                                    }
-                                    },
-                                  
-                                })}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p className='absolute -bottom-5 text-red-800'>{errors.password?.message}</p>
-                        </div>
+          <CustomInput<ILogin> title="Email" name="email" type={"email"} placeholder='Enter Email'  register={register} rules={textValidation("Email")} errors={errors.email}/>
+          <CustomInput<ILogin> title="Password" name="password" type={"password"} placeholder='Enter Password'  register={register} rules={passwordValidation()} errors={errors.password}/>
+          
           <button type="submit" className="bg-blue-500 px-4 py-1 rounded-lg w-1/2 self-center " >Login</button>
         </form>
       </div>

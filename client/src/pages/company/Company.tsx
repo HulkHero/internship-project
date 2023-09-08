@@ -11,7 +11,7 @@ const Company = () => {
       <CNavBar/>
       <div className='flex flex-row'>
        <SideNav></SideNav>
-      <Outlet></Outlet>
+       <div className='h-[92vh] overflow-y-scroll w-full'><Outlet></Outlet></div>
       </div>
     </div>
   )

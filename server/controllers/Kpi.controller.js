@@ -6,7 +6,6 @@ const addKpi = async (req, res) => {
     try {
         const { techRole, companyName, kpis } = req.body;
         console.log(req.body)
-
         const kpi = new Kpi({ techRole, companyName, kpiFields: kpis });
         console.log(kpi);
         const response = await kpi.save();

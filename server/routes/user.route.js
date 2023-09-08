@@ -12,6 +12,9 @@ router.post('/addMember/:adminId', authentication, authorization.adminAuthz, Use
 
 router.post('/login', User.userLogin)
 
+router.get('/search/:searche', authentication, User.searchUser);
+
+router.get("/checkEmail/:email", User.checkEmail);
 router.get('/hello', authentication, authorization.adminAuthz, (req, res) => {
     res.status(200).json({ msg: "hello" })
 });

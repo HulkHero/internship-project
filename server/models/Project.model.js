@@ -9,8 +9,10 @@ const projectSchema = Schema({
     },
     teamName: {
         type: String,
-        required: true
+        required: true,
+        lowercase: true,
     },
+    projectManager: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
     projectDescription: {
         type: String,
     },
@@ -18,13 +20,13 @@ const projectSchema = Schema({
         type: Date,
         required: true
     },
-    projectDeadline: {
+    projectEndDate: {
         type: Date,
         required: true
     },
     projectStatus: {
         type: String,
-        required: true,
+
         enum: ['Not Started', 'In Progress', 'Completed', 'Closed']
     },
     assignedBy: { type: Schema.Types.ObjectId, ref: 'Users' },

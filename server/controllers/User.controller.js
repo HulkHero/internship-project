@@ -39,6 +39,34 @@ const addUser = async (req, res) => {
     })
 }
 
+const checkEmail = async (req, res) => {
+    const email = req.params.email;
+    const user = await User.find({ email: email }).exec();
+    console.log(user, "user")
+    if (user?.length > 0) {
+
+        return res.status(200).send([user._id])
+    }
+    else {
+        return res.status(200).send({ msg: "No user found" })
+    }
+
+}
+
+const searchUser = async (req, res) => {
+    const searche = req.params.searche;
+    const companyName = req.companyName;
+    console.log(searche, companyName, "searche")
+    const users = await User.find({ companyName, firstName: { $regex: `^${searche}`, $options: "i" } }).select({ firstName: 1, lastName: 1, techRole: 1 }).lean().exec();
+    console.log(users, "users")
+    if (users?.length > 0) {
+        return res.status(200).send(users)
+    }
+    else {
+        return res.status(200).send([])
+    }
+}
+
 const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -107,4 +135,8 @@ const userSignup = async (req, res) => {
     })
 }
 
-module.exports = { addUser, userLogin, userSignup }
+module.exports = { addUser,
+     userLogin, 
+     userSignup,
+     checkEmail,
+     searchUser }

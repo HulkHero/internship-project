@@ -13,10 +13,10 @@ const CNavBar = () => {
 
   return (
     <div className='w-full'>
-        <div  className='relative min-h-[50px] bg-teal-800 text-white text-center mx-auto w-full flex p-4'>
+        <div  className='relative min-h-[50px] bg-dark text-white text-center mx-auto w-full flex p-3'>
             
                 {
-                    data && <div className='text-2xl text-center font-semibold'>{data.companyName}</div>
+                    data && <div className='text-2xl px-4 italic text-brightRed text-center font-semibold'>{data.companyName}</div>
                 }
            
         </div>
