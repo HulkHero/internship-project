@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { set, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import DateRangePicker from '@wojtekmaj/react-daterange-picker';
 import '@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import CustomInput from '../../components/InputFields/CustomInput';
-import { textLongValidation, textValidation } from '../../utils/InputValidations';
+import CustomInput from '../../../components/CustomInput';
+import { textLongValidation, textValidation } from '../../../utils/InputValidations';
 import SelectUser from './SelectUser';
 import OptionTypeBase, { ActionMeta, GroupBase, OptionProps } from 'react-select';
 import AsyncSelect from 'react-select/async';
-import axiosInstance from '../../utils/interceptor';
+import axiosInstance from '../../../utils/interceptor';
 import axios from 'axios';
+import usePost from '../../../hooks/usePost';
+import Alert from '../../../components/Alert';
+import CustomButton from '../../../components/CustomButton';
 
 interface IAddProject {
   projectName: string;
@@ -47,6 +50,8 @@ interface IOption extends OptionTypeBase {
     }),
   };
 const AddProject: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>(""); 
   const [options, setOptions] = useState<{value:string}[]>([]);
 
 const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>>> = (props) => {
@@ -69,15 +74,17 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
       projectEndDate: new Date(),
     }
   }); 
-  const { register, handleSubmit, formState, getValues } = form;
-  const { errors } = formState;
+  const { register, handleSubmit, formState, getValues ,reset} = form;
+  const { errors,isSubmitSuccessful } = formState;
 
   const onSubmit = async (data: IAddProject) => {
 
     console.log(data);
-     if(options.length===0)
+    setIsLoading(true);
+     if(options.length<2)
      {
-       alert("Please select atleast one member")
+       alert("Please select atleast two member")
+       setIsLoading(false);
        return;
      }
     const bodyData={
@@ -86,18 +93,28 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
     }
 
     axiosInstance.post('/project/add',bodyData).then((res)=>{
-      console.log(res,"res");
-
+      setIsLoading(false);
     }).catch((err)=>{
-      console.log(err,"err");
+      setIsLoading(false);
     })
-
-    console.log(bodyData,"bodyData");
   };
 
   const startValue = getValues("projectStartDate");
 
-  const fetchOptions = async (inputValue: string) => {
+  useEffect(() => {
+    if (isSubmitSuccessful===true) {
+      reset({
+        projectName: "",
+        projectDescription: "",
+        teamName: "",
+        projectMembers: [""],
+        projectStartDate: new Date(),
+        projectEndDate: new Date(),
+      });
+    }
+  }, [isSubmitSuccessful]);
+
+  const fetchOptions = async (inputValue:string) => {
     try {
       const response = await axiosInstance.get(`/user/search/${inputValue}`);
       console.log(response.data,"response")
@@ -184,12 +201,9 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
                 styles={customStyles}
                 />
           </div>
-
- 
-            <div>
-                <button type="submit" className='btn btn-primary'>Submit</button>
+            <div className='my-2'>
+            <CustomButton text="Submit" disabled={isLoading} className={'btn-primary'} isLoading={isLoading} type="submit" />
             </div>
-                
             </form>        
         </div>
     </div>

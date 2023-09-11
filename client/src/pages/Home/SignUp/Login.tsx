@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { loadStripe } from '@stripe/stripe-js';
 import { Outlet } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addUser, authSelector } from "../redux/slices/authSlice";
-import { userSignUp } from '../types';
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { addUser, authSelector } from "../../../redux/slices/authSlice";
+import { userSignUp } from '../../../types';
 import { error } from 'console';
 import axios from 'axios';
-import CustomInput from '../components/InputFields/CustomInput';
-import { emailValidation, passwordValidation, textValidation } from '../utils/InputValidations';
+import CustomInput from '../../../components/CustomInput';
+import { emailValidation, passwordValidation, textValidation } from '../../../utils/InputValidations';
 
 interface ILogin {
     email: string;

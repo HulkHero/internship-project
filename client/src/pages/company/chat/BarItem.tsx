@@ -3,12 +3,12 @@ import { IChat } from './Chat';
 interface Props{
     chat:IChat,
     currentUser:string
+    online:boolean
 
 }
 
 const BarItem =(props:Props) => {
     const {chat,currentUser}=props;
-    console.log(chat,"data");
     
     const otherUser=chat.members.find((member)=>member._id!==currentUser)
     
@@ -23,7 +23,9 @@ const BarItem =(props:Props) => {
        </div>
        <div className='text-sm'>
         {otherUser?.techRole}
+        {props.online && <span className="text-green-500">●</span>}
        </div>
+
 
     </div>
   )

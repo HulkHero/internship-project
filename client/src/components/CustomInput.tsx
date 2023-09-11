@@ -12,7 +12,6 @@ interface Props<T extends FieldValues> extends UseControllerProps<T> {
 const CustomInput =<T extends {}> (props:Props<T>) => {
 
     const {register,type,title,name,placeholder,errors,rules }=props
-   console.log("redenr input")
   return (
     <div className="mb-3">
     <label className="block font-bold">{title}:</label>

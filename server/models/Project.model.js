@@ -29,9 +29,7 @@ const projectSchema = Schema({
 
         enum: ['Not Started', 'In Progress', 'Completed', 'Closed']
     },
-    assignedBy: { type: Schema.Types.ObjectId, ref: 'Users' },
-    assignedTo: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
-    tasks: [{ type: Schema.Types.ObjectId, ref: 'Tasks' }],
+    projectMembers: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
 }, {
     timestamps: true
 });

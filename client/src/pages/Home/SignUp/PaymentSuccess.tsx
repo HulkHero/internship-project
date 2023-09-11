@@ -1,9 +1,9 @@
 import React from 'react'
-import {  useAppSelector } from "../redux/hooks";
-import { userSelector } from "../redux/slices/userSlice";
+import {  useAppSelector } from "../../../redux/hooks";
+import { userSelector } from "../../../redux/slices/userSlice";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { userSignUp } from '../types';
+import { userSignUp } from '../../../types';
 
 const PaymentSuccess = () => {
 const user = useAppSelector(userSelector);

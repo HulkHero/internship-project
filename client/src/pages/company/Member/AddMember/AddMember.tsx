@@ -2,14 +2,15 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import axios from 'axios';
-import { useAppSelector } from '../../redux/hooks';
-import { authSelector } from '../../redux/slices/authSlice';
-import axiosInstance from '../../utils/interceptor';
-import Button from '../../components/Button';
+import { useAppSelector } from '../../../../redux/hooks';
+import { authSelector } from '../../../../redux/slices/authSlice';
+import axiosInstance from '../../../../utils/interceptor';
+import Button from '../../../../components/Button';
 import {AiOutlineUserAdd} from "react-icons/ai"
-import CustomInput from '../../components/InputFields/CustomInput';
-import { emailValidation, passwordValidation, textValidation } from '../../utils/InputValidations';
-import useFetch from '../../hooks/useFetch';
+import CustomInput from '../../../../components/CustomInput';
+import { emailValidation, passwordValidation, textValidation } from '../../../../utils/InputValidations';
+import useFetch from '../../../../hooks/useFetch';
+import CustomButton from '../../../../components/CustomButton';
 interface IAddMember{
     firstName:string,
     lastName:string,
@@ -48,7 +49,12 @@ const AddMember = () => {
     
 
     const { register, handleSubmit, formState } = form;
-    const { errors,isDirty,isValid ,isSubmitting} = formState;
+    const { errors,isDirty,isValid ,isSubmitting,isSubmitSuccessful} = formState;
+    useEffect(() => {
+        if (isSubmitSuccessful) {
+            form.reset();
+        }
+    }, [isSubmitSuccessful]);
     const onSubmit =async (data: IAddMember) =>{
       setLoading(true)
       axios.post(`http://localhost:5000/user/addMember/${_id}`,data,{
@@ -66,16 +72,6 @@ const AddMember = () => {
       })
     }
     const {data:roles,error:errorMessage,isLoading}=useFetch<string[]>({endPoint:"/kpi/get",params:`?companyName=${companyName}`})
-
-    // useEffect(() => {
-    //     axiosInstance.get(`/kpi/get?companyName=${companyName}`).then((res)=>{
-    //     setRoles(res.data.roles)
-
-    //     }).catch((err)=>{
-    //         setError(err.response.data.msg)
-    //         console.log(err)
-    //     })
-    // },[companyName])
     return (
         <div className=" flex  justify-center w-full">
             <div className="bg-white p-4 rounded-md  w-full">
@@ -131,7 +127,7 @@ const AddMember = () => {
                             <p>{errors.techRole?.message}</p>
                         </div>
                         <div className="flex justify-center text-white">
-                           <Button type="submit" disabled={!isDirty|| !isValid  || isSubmitting}  text="Add Member" icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>} />
+                            <CustomButton text="Add Member" type="submit" className='btn-primary btn-wide btn-sm' disabled={!isDirty|| !isValid } isLoading={isSubmitting } icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>}></CustomButton>
                         </div>
                     </div>
                 </form>

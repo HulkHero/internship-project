@@ -1,9 +1,9 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { loadStripe } from '@stripe/stripe-js';
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addUser, userSelector } from "../redux/slices/userSlice";
-import { userSignUp } from '../types';
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { addUser, userSelector } from "../../../redux/slices/userSlice";
+import { userSignUp } from '../../../types';
 
 
 const Signup = () => {

@@ -18,3 +18,7 @@ code {
 ::-webkit-scrollbar{
   display: none;
 }
+
+.btn{
+  @apply text-white
+}

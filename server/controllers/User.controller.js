@@ -135,8 +135,76 @@ const userSignup = async (req, res) => {
     })
 }
 
-module.exports = { addUser,
-     userLogin, 
-     userSignup,
-     checkEmail,
-     searchUser }
+const getAllUsers = async (req, res) => {
+
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const skip = (page) * limit;
+    const companyName = req.companyName;
+
+    // Use aggregation to fetch paginated users and total count
+    const aggregationPipeline = [
+        {
+            $match: {
+                companyName: companyName,
+            },
+        },
+        {
+            $project: {
+                firstName: 1,
+                lastName: 1,
+                techRole: 1,
+                systemRole: 1,
+                email: 1,
+            },
+        },
+        {
+            $facet: {
+                paginatedUsers: [
+                    { $skip: skip },
+                    { $limit: limit },
+                ],
+                totalUsers: [
+                    { $count: "count" },
+                ],
+            },
+        },
+        {
+            $unwind: "$totalUsers",
+        },
+        {
+            $project: {
+                paginatedUsers: 1,
+                total: "$totalUsers.count",
+            },
+        },
+    ];
+
+    const result = await User.aggregate(aggregationPipeline);
+    console.log(result, "result")
+    const { paginatedUsers, total } = result[0];
+
+    // Calculate 'hasMore' based on the total number of items and the current page
+    const hasMore = (page + 1) * limit < total;
+
+
+    res.status(200).json({
+        data: paginatedUsers,
+        page: page,
+        limit: limit,
+        total: total,
+        hasMore: hasMore,
+    });
+
+
+
+}
+
+module.exports = {
+    addUser,
+    userLogin,
+    userSignup,
+    checkEmail,
+    searchUser,
+    getAllUsers
+}

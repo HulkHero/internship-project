@@ -1,10 +1,10 @@
 import {useEffect,useState,useRef, SyntheticEvent, FormEvent} from 'react'
 import { IChat, ISendMessage } from './Chat'
 import { IReceivedMessage } from './Chat'
-import { User } from '../../types'
-import useFetch from '../../hooks/useFetch'
-import { useFetchMessages } from '../../ReactKueries/useFetchMessages'
-import axiosInstance from '../../utils/interceptor'
+import { User } from '../../../types'
+import useFetch from '../../../hooks/useFetch'
+import { useFetchMessages } from '../../../ReactKueries/useFetchMessages'
+import axiosInstance from '../../../utils/interceptor'
 import { format } from 'timeago.js'
 import { useQuery } from '@tanstack/react-query'
 import { DateTime } from "luxon";
@@ -22,7 +22,7 @@ const ChatRoom = ({chat,currentUser,setSendMessage,receivedMessage,user}:Props) 
   console.log("first render");
   const receiver = chat?.members.find((item)=>item._id!==currentUser);
 
-  const { data } =useFetchMessages<IReceivedMessage[]>(chat?._id||"");
+  const { data,isLoading } =useFetchMessages<IReceivedMessage[]>(chat?._id||"");
   useEffect(() => {
         if (data){
           setMessages(data);
@@ -85,7 +85,7 @@ const ChatRoom = ({chat,currentUser,setSendMessage,receivedMessage,user}:Props) 
     const imageRef = useRef<HTMLInputElement|null>(null);
 
   return (
-    <div className='w-full h-[92vh] overflow-y-scroll'>
+    <div className='w-full h-[92vh] bg-smoke overflow-y-scroll'>
       <div className='bg-darkRed text-white px-4 py-2'>
         <div className='text-xl'>
           {receiver?.firstName} {receiver?.lastName}
@@ -97,25 +97,32 @@ const ChatRoom = ({chat,currentUser,setSendMessage,receivedMessage,user}:Props) 
       </div>
       <div>
       <div className="w-full h-[75vh] overflow-y-scroll bg-smoke" >
-              {messages && messages.map((message) => {
-               
-                // Parse the date string as an ISO format
+           
+              {messages.length>0 ? messages.map((message) => {
                 let date = DateTime.fromISO(message.createdAt||"");
-                // Get the relative time from now
                 let time = date.toRelative();  
                 return(
                 <>
-                  <div ref={scroll}
+                  <div ref={scroll} className={`chat ${message.senderId===currentUser?"chat-end ":"chat-start"} `}>
+                    <div className={`chat-bubble ${message.senderId===currentUser? "chat-bubble-success":"bg-blue-500 text-white"}`}>{message.text}</div>
+                  <div className='chat-footer'>{time}</div>
+                   
+                  </div>
+                  
+                  
+                  {/* <div ref={scroll}
                   className={`${message.senderId===currentUser?"ml-auto":"mr-auto"} w-fit  px-5 flex flex-col`}
                   >
-                    <div className={`${message.senderId===currentUser?"bg-blue-300 ml:auto items-end":"bg-gray-200 mr-auto items-start"} w-fit flex flex-col max-w-xs my-2 p-4 rounded-lg shadow-md`}>
+                    <div className={`${message.senderId===currentUser?"bg-blue-300 ml:auto chat chat-end items-end":"bg-gray-200 chat chat-start mr-auto items-start"} w-fit flex flex-col max-w-xs my-2 p-4 rounded-lg shadow-md`}>
                         <div className=" font-semibold text-gray-800"></div>
                         <div className="text-gray-700">{message.text}</div>
                         <div className="text-xs text-gray-500 mt-1">{time}</div>
                     </div>
-                  </div>
+                  </div> */}
                 </>
-              )})}
+              )}):<div className='flex items-center '>
+                  { isLoading?"Loading":"Start new conversation"}
+                </div>}
             </div>
       </div>
       <div className="border-t-2">

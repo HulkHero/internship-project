@@ -1,10 +1,10 @@
 
-import axiosInstance from '../../utils/interceptor'
+import axiosInstance from '../../../utils/interceptor'
 import Inputs from './Inputs'
 import {useEffect, useState} from 'react'
 import { useForm ,useFieldArray, FieldErrors, set } from 'react-hook-form'
-import { useAppSelector } from '../../redux/hooks'
-import { authSelector } from '../../redux/slices/authSlice'
+import { useAppSelector } from '../../../redux/hooks'
+import { authSelector } from '../../../redux/slices/authSlice'
 
 interface Ikpi{
     kpiName:string,
@@ -110,7 +110,7 @@ const AddKpi = () => {
                         return(
                             <div className='relative flex'>
                             { errors?.kpis &&  errors.kpis[index] ? <span className='absolute top-2 left-2 h-2 w-2 rounded-full bg-red-700  '/>:null}
-                            <button type={"button"} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} className="btn  btn-circle">Kpi</button>
+                            <button type={"button"} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} className={`btn ${ toggle===item.id?"btn-primary":"bg-gray-300"} btn-circle`}>Kpi</button>
                             {/* <button type="button"  className={`${toggle===item.id ?" bg-green-600 ":"bg-gray-300"} ml-2 px-3 py-1 rounded-xl`} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} >Kpi</button> */}
                             </div>
                         )

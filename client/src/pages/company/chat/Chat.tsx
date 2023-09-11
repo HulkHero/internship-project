@@ -2,11 +2,11 @@ import React,{useState,useRef,useEffect} from 'react'
 import SideBar from './SideBar'
 import ChatRoom from './ChatRoom'
 import { Socket, io } from "socket.io-client";
-import { useAppSelector } from '../../redux/hooks';
-import { authSelector } from '../../redux/slices/authSlice';
-import axiosInstance from '../../utils/interceptor';
-import { useFetchChats } from '../../ReactKueries/useFetchChats';
-import { User } from '../../types';
+import { useAppSelector } from '../../../redux/hooks';
+import { authSelector } from '../../../redux/slices/authSlice';
+import axiosInstance from '../../../utils/interceptor';
+import { useFetchChats } from '../../../ReactKueries/useFetchChats';
+import { IAddMember, User } from '../../../types';
 
 
 export interface member{
@@ -15,6 +15,10 @@ export interface member{
     lastName:string,
     systemRole:string,
     techRole:string,
+}
+
+export interface userId{
+    userId:string,
 }
 
 export interface IChat{
@@ -43,9 +47,13 @@ const Chat = () => {
     const socket: { current: Socket } = { current: io("ws://localhost:8800") };
  
     const user=useAppSelector(authSelector)
-
-    const {data:chats}=useFetchChats<IChat[]>(user._id)
-    console.log(chats,"chats");
+    const [chats, setChats] = useState<IChat[]|undefined>([]);
+    const {data}=useFetchChats<IChat[]>(user._id)
+    useEffect(() => {
+      if (data){
+        setChats(data);
+      }
+    }, [data]);
   
     // const [chats, setChats] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
@@ -75,16 +83,13 @@ const Chat = () => {
         );
       }, []);
 
-      // const checkOnlineStatus = (chat) => {
-      //   const chatMember = chat.members.find((member) => member !== user._id);
-      //   const online = onlineUsers.find((user) => user.userId === chatMember);
-      //   return online ? true : false;
-      // };
+
+
 
 
   return (
      <div className="w-full flex justify-left   ">
-        <SideBar chats={chats} user={user } currentChat={currentChat } setCurrentChat={setCurrentChat} />
+        <SideBar chats={chats}  setChats={setChats} onlineUsers={onlineUsers} user={user } currentChat={currentChat } setCurrentChat={setCurrentChat} />
        
        {currentChat? <ChatRoom 
           chat={currentChat}
@@ -93,7 +98,7 @@ const Chat = () => {
           setSendMessage={setSendMessage}
           receivedMessage={receivedMessage}
         />
-       :"Select a chat"}
+       :<div className='w-full'>Select a chat</div>}
      </div>
   )
 }

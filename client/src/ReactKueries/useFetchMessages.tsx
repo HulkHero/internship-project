@@ -10,10 +10,10 @@ const FetchMessages=<T extends {}>(_id:string)=>{
 }
 
 export const useFetchMessages =<T extends {} > (_id:string)=> {
-    return useQuery(['fetchMessages'], () => FetchMessages<T>(_id), {
+    return useQuery([`fetchMessages${_id}`], () => FetchMessages<T>(_id), {
         // select: (data) => data.data
          select: (data) => {console.log(data); return data.data},
-         refetchInterval:10000
+          cacheTime:0
 
     })
 }

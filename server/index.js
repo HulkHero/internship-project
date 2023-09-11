@@ -49,6 +49,7 @@ io.on("connection", (socket) => {
             console.log("New User Connected", activeUsers);
         }
         // Send all active users to the new user
+        console.log("get-users", Array.from(activeUsers.values()))
         io.emit("get-users", Array.from(activeUsers.values()));
     });
 

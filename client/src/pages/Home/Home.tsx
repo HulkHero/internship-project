@@ -1,7 +1,7 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
-import { useAppDispatch ,useAppSelector } from "../redux/hooks";
-import { addUser, authSelector } from '../redux/slices/authSlice';
+import NavBar from '../../components/NavBar'
+import { useAppDispatch ,useAppSelector } from "../../redux/hooks";
+import { addUser, authSelector } from '../../redux/slices/authSlice';
 
 const Home = () => {
   const auth = useAppSelector(authSelector);

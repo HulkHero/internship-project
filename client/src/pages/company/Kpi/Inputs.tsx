@@ -1,10 +1,10 @@
 import React,{memo} from 'react';
 import { FieldErrors, UseFormGetValues, UseFormRegister } from 'react-hook-form';
-import { textValidation,emailValidation,numberValidation } from '../../utils/InputValidations';
-import TextInput from '../../components/InputFields/TextInput';
-import Input2 from '../../components/Input2';
-import NumberInput from '../../components/InputFields/NumberInput';
-import CustomInput from '../../components/InputFields/CustomInput';
+import { textValidation,emailValidation,numberValidation } from '../../../utils/InputValidations';
+import TextInput from '../../../components/InputFields/TextInput';
+import Input2 from '../../../components/Input2';
+import NumberInput from '../../../components/InputFields/NumberInput';
+import CustomInput from '../../../components/CustomInput';
 
 interface Ikpi {
     kpiName: string;
