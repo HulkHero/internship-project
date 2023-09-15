@@ -85,7 +85,7 @@ const ChatRoom = ({chat,currentUser,setSendMessage,receivedMessage,user}:Props) 
     const imageRef = useRef<HTMLInputElement|null>(null);
 
   return (
-    <div className='w-full h-[92vh] bg-smoke overflow-y-scroll'>
+    <div className='w-full max-h-[90vh] bg-smoke overflow-y-scroll'>
       <div className='bg-darkRed text-white px-4 py-2'>
         <div className='text-xl'>
           {receiver?.firstName} {receiver?.lastName}
@@ -96,7 +96,7 @@ const ChatRoom = ({chat,currentUser,setSendMessage,receivedMessage,user}:Props) 
         </div>
       </div>
       <div>
-      <div className="w-full h-[75vh] overflow-y-scroll bg-smoke" >
+      <div className="w-full h-[72vh] overflow-y-scroll bg-smoke" >
            
               {messages.length>0 ? messages.map((message) => {
                 let date = DateTime.fromISO(message.createdAt||"");

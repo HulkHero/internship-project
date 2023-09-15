@@ -41,10 +41,21 @@ const employeeAuthz = async (req, res, next) => {
 
 }
 
+const AdminOrManager = async (req, res, next) => {
+    try {
+        if (req.systemRole === "admin" || req.systemRole === "manager") {
+            next()
+        }
+    } catch (error) {
+        return res.status(401).send({ error: "Authoization error" })
+    }
+}
+
 
 
 module.exports = {
     adminAuthz,
     managerAuthz,
-    employeeAuthz
+    employeeAuthz,
+    AdminOrManager
 };

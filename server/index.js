@@ -7,6 +7,7 @@ const { kpiRouter } = require("./routes/kpi.route");
 const { projectRouter } = require("./routes/project.route");
 const { chatRouter } = require("./routes/chat.route");
 const { messageRouter } = require("./routes/message.route");
+const { evaluationRouter } = require("./routes/evaluation.route");
 require('dotenv').config();
 const stripe = require('stripe')('sk_test_51Nj141DOsxvBXmWQCtDMZyeOlTOtsuDaI2nyz4up6j1YG4nKEvM6SF29Wi0sobNyTich0CStl4iBBC23gvBKyLPc00NX0Rtxnm');
 const io = require("socket.io")(8800, {
@@ -36,6 +37,7 @@ app.use("/kpi", kpiRouter)
 app.use("/project", projectRouter)
 app.use("/chat", chatRouter)
 app.use("/message", messageRouter)
+app.use("/evaluation", evaluationRouter)
 
 // Initialize an empty Map to track active users
 const activeUsers = new Map();

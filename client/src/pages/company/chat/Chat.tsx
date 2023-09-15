@@ -48,21 +48,19 @@ const Chat = () => {
  
     const user=useAppSelector(authSelector)
     const [chats, setChats] = useState<IChat[]|undefined>([]);
-    const {data}=useFetchChats<IChat[]>(user._id)
-    useEffect(() => {
-      if (data){
-        setChats(data);
-      }
-    }, [data]);
-  
-    // const [chats, setChats] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [currentChat, setCurrentChat] = useState<IChat|null>(null);
     const [sendMessage, setSendMessage] = useState<ISendMessage|null>(null);
     const [receivedMessage, setReceivedMessage] = useState<IReceivedMessage|null>(null);
 
+    const {data,isLoading,isError,error}=useFetchChats<IChat[]>(user._id)
     useEffect(() => {
+      if (data){
+        setChats(data);
+      }
+    }, [data]);
 
+    useEffect(() => {
         socket.current = io("ws://localhost:8800");
         socket.current.emit("new-user-add", user._id);
         socket.current.on("get-users", (users) => {
@@ -70,26 +68,21 @@ const Chat = () => {
         });
       }, [user]);
       
-      useEffect(() => {
-        if (sendMessage!==null) {
-      
-          socket.current.emit("send-message", sendMessage);}
+    useEffect(() => {
+      if (sendMessage!==null) {
+        socket.current.emit("send-message", sendMessage);}
       }, [sendMessage]);
 
-      useEffect(() => {
-        socket.current.on("recieve-message", (data) => {
-          setReceivedMessage(data);
-        }
+    useEffect(() => {
+      socket.current.on("recieve-message", (data) => {
+        setReceivedMessage(data);
+      }
         );
-      }, []);
-
-
-
-
+    }, []);
 
   return (
      <div className="w-full flex justify-left   ">
-        <SideBar chats={chats}  setChats={setChats} onlineUsers={onlineUsers} user={user } currentChat={currentChat } setCurrentChat={setCurrentChat} />
+        <SideBar chats={chats}  setChats={setChats} isLoading={isLoading} onlineUsers={onlineUsers} user={user } currentChat={currentChat } setCurrentChat={setCurrentChat} />
        
        {currentChat? <ChatRoom 
           chat={currentChat}
@@ -98,7 +91,7 @@ const Chat = () => {
           setSendMessage={setSendMessage}
           receivedMessage={receivedMessage}
         />
-       :<div className='w-full'>Select a chat</div>}
+       :<div className='w-fit mx-auto my-auto'>Select a chat</div>}
      </div>
   )
 }

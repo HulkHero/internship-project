@@ -5,6 +5,8 @@ import {useEffect, useState} from 'react'
 import { useForm ,useFieldArray, FieldErrors, set } from 'react-hook-form'
 import { useAppSelector } from '../../../redux/hooks'
 import { authSelector } from '../../../redux/slices/authSlice'
+import openModal from '../../../utils/handleModal'
+import Modal from '../../../components/Modal'
 
 interface Ikpi{
     kpiName:string,
@@ -33,8 +35,19 @@ const AddKpi = () => {
             }],
         },
     })
-    const {register,control,handleSubmit,formState:{errors},getValues,watch}=form
-  
+    const {register,control,handleSubmit,formState:{errors,isSubmitting,isSubmitSuccessful,},getValues,watch,reset,resetField }=form
+    useEffect(() => {
+        if (isSubmitSuccessful===true) {
+            reset({
+                techRole:"",
+                kpis:[{
+                    kpiName:"",
+                    kpiWeight:0,
+                    kpiThreshold:0
+                }],
+            });
+        }
+    }, [isSubmitSuccessful]);
     const {fields,append,remove}=useFieldArray({
         name:"kpis",
         control,
@@ -58,9 +71,9 @@ const AddKpi = () => {
         }
         
         axiosInstance.post("/kpi/add",{...data,companyName}as SForm).then((res)=>{
-            console.log(res)
+           openModal("success")
         }).catch((err)=>{
-            console.log(err)    
+            openModal("error")   
         })
 
     }
@@ -76,6 +89,8 @@ const AddKpi = () => {
     }  
   return (
     <div className=' space-y-3 p-3'>
+        <Modal variant='success' title="Kpi Added" description="Kpi Added Successfully" />
+        <Modal variant='error' title={"Error"} description='Something went wrong'  ></Modal>
         <div className='flex  '>
             <h1 className='font-semibold text-2xl'>Kpi schema</h1>
         </div>
@@ -128,7 +143,7 @@ const AddKpi = () => {
                         )
                     })
              }
-            <button type="submit" className='btn btn-primary btn-sm btn-wide' >Submit</button>
+            <button type="submit" disabled={isSubmitting} className='btn btn-primary btn-sm btn-wide' >Submit</button>
             </form>
         </div>
     </div>

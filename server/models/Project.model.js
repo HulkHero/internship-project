@@ -24,12 +24,23 @@ const projectSchema = Schema({
         type: Date,
         required: true
     },
+    companyName: {
+        type: String,
+        required: true
+    },
     projectStatus: {
         type: String,
 
         enum: ['Not Started', 'In Progress', 'Completed', 'Closed']
     },
-    projectMembers: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
+    projectMembers: [{
+        member: { type: Schema.Types.ObjectId, ref: 'Users' },
+        isEvaluated: {
+            type: Boolean,
+            default: false
+        },
+        evaluation: { type: Schema.Types.ObjectId, ref: 'Evaluations' },
+    }],
 }, {
     timestamps: true
 });

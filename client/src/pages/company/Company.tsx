@@ -10,7 +10,7 @@ const Company = () => {
       <CNavBar/>
       <div className='flex flex-row'>
        <SideNav></SideNav>
-       <div className='h-[92vh] overflow-y-scroll w-full'><Outlet></Outlet></div>
+       <div className='h-[91vh] overflow-y-scroll w-full overflow-x-scroll'><Outlet></Outlet></div>
       </div>
     </div>
   )

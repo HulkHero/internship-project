@@ -27,4 +27,18 @@ const getRoles = async (req, res) => {
         return res.status(500).json({ msg: err.message });
     }
 }
-module.exports = { addKpi, getRoles }
+
+const getKpi = async (req, res) => {
+    try {
+        const companyName = req.companyName;
+        const techRole = req.params.techRole;
+        const kpi = await Kpi.findOne({ companyName: companyName, techRole: techRole });
+        console.log(kpi)
+        return res.status(200).json({ data: kpi });
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({ msg: err.message });
+    }
+}
+module.exports = { addKpi, getRoles, getKpi }

@@ -59,9 +59,9 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   isLoading = false,
 }: ButtonProps) => {
-  const buttonClasses = `btn${
+  const buttonClasses = `btn ${className} ${
     isLoading ? 'btn-loading' : ''
-  }  ${className}`.trim();
+  }  `.trim();
 
   return (
     <button

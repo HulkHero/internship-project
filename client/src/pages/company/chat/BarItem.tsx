@@ -12,10 +12,6 @@ const BarItem =(props:Props) => {
     
     const otherUser=chat.members.find((member)=>member._id!==currentUser)
     
-
-
-
-
   return (
     <div>
       <div className="flex items-center justify-between  border-gray-200">

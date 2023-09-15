@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import DateRangePicker from '@wojtekmaj/react-daterange-picker';
-import '@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css';
-import 'react-calendar/dist/Calendar.css';
-import CustomInput from '../../../components/CustomInput';
-import { textLongValidation, textValidation } from '../../../utils/InputValidations';
-import SelectUser from './SelectUser';
+
+import CustomInput from '../../../../../components/CustomInput';
+import { textLongValidation, textValidation } from '../../../../../utils/InputValidations';
 import OptionTypeBase, { ActionMeta, GroupBase, OptionProps } from 'react-select';
 import AsyncSelect from 'react-select/async';
-import axiosInstance from '../../../utils/interceptor';
-import axios from 'axios';
-import usePost from '../../../hooks/usePost';
-import Alert from '../../../components/Alert';
-import CustomButton from '../../../components/CustomButton';
+import axiosInstance from '../../../../../utils/interceptor';
+
+import CustomButton from '../../../../../components/CustomButton';
 
 interface IAddProject {
   projectName: string;

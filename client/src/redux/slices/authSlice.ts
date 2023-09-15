@@ -23,6 +23,7 @@ const initialState: User =
     }
 
 if(localStorage.getItem('user')){
+    console.log("localStorage.getItem('user')",localStorage.getItem('user'))
     const user = JSON.parse(localStorage.getItem('user') as string);
     initialState._id = user._id;
     initialState.firstName = user.firstName;
@@ -49,9 +50,21 @@ export const authSlice = createSlice({
         }
 
     },
+    logOut: (state) => {
+        localStorage.clear();
+        return{
+            _id: '',   
+            firstName: '',
+            lastName: '',
+            email: '',
+            companyName: '',
+            token:null,
+            systemRole:""
+        }
+    }
   },
 });
-export const { addUser } =
+export const { addUser ,logOut} =
   authSlice.actions;
 export const authSelector = (state: RootState) => state.authReducer;
 export default authSlice.reducer;

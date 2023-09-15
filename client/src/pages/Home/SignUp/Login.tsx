@@ -38,8 +38,7 @@ const Login = () => {
         localStorage.setItem("user",JSON.stringify(res.data.user));
       
         dispatch(addUser(res.data.user));
-        navigate("/company");
-        
+        navigate("/company/");
     }).catch((err)=>{
         console.log(err,"err");
     })

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Route } from "react-router-dom";
+import { Link, Route, createSearchParams } from "react-router-dom";
 
 const Breadcrumbs = ({ route }:{route:string}) => {
   
@@ -18,18 +18,26 @@ const Breadcrumbs = ({ route }:{route:string}) => {
       }
       return null;
     }
+    if(segment.length>10){
+      return{
+        label:"Detail",
+        href:`/${pathSegments.slice(0, index + 1).join("/")}`,
+      
+      }
+    }
 
     return {
       label: segment,
       href: `/${pathSegments.slice(0, index + 1).join("/")}`,
+   
     };
   }).filter((breadcrumb) => breadcrumb !== null);
 
   return (
     <ul className="flex gap-2">
     {breadcrumbs.map((breadcrumb, index) => (
-      <li className="text-sm breadcrumbs bg-textDark px-3 py-2 rounded-xl" key={index}>
-        <Link to={breadcrumb?.href||""}>{breadcrumb?.label}</Link>
+      <li className="text-sm breadcrumbs bg-ligtDark px-3 py-2 rounded-xl" key={index}>
+        <Link className="hover:underline" to={breadcrumb?.href||""}>{breadcrumb?.label}</Link>
       </li>
     ))}
   </ul>

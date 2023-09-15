@@ -19,6 +19,8 @@ code {
   display: none;
 }
 
-.btn{
-  @apply text-white
+
+
+body {
+  background-color:"black";
 }

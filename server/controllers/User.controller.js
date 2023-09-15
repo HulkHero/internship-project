@@ -195,9 +195,18 @@ const getAllUsers = async (req, res) => {
         total: total,
         hasMore: hasMore,
     });
+}
 
-
-
+const logout = async (req, res) => {
+    try {
+        const result = await User.findOneAndUpdate({ _id: req.user._id }, { $set: { tokenString: null } }).exec();
+        if (result) {
+            return res.status(200).json({ msg: "Logged out successfully" })
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ msg: "Failed to logout" })
+    }
 }
 
 module.exports = {
@@ -206,5 +215,6 @@ module.exports = {
     userSignup,
     checkEmail,
     searchUser,
-    getAllUsers
+    getAllUsers,
+    logout
 }

@@ -60,16 +60,16 @@ const DataGrid = ({ data, columns }: Props) => {
   });
 
   return (
-    <div className='w3-container'>
+    <div className='w-full'>
       <input
         type='text'
         value={filtering}
         onChange={(e) => setFiltering(e.target.value)}
-        className='outline-none my-2 px-2 py-1 rounded-lg ring-1 focus:ring-2 focus:ring-blue-500 ring-blue-400 w-full max-w-xs'
+        className='outline-none my-2 px-2 py-1 rounded-lg ring-1 focus:ring-2 focus:ring-darkRed ring-darkRed w-full max-w-xs'
         placeholder='Filter...'
       />
       <table className='w-full border-collapse'>
-        <thead className='bg-blue-500 text-white'>
+        <thead className='bg-darkRed text-white'>
           {table.getHeaderGroups().map((headerGroup:HeaderGroup<User>) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -77,10 +77,10 @@ const DataGrid = ({ data, columns }: Props) => {
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className='p-2 cursor-pointer'
+                    className='px-2 py-1 cursor-pointer bg-darkRed '
                   >
                     {header.isPlaceholder ? null : (
-                      <div className='bg-blue-500'>
+                      <div className='bg-darkRed'>
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
@@ -98,7 +98,7 @@ const DataGrid = ({ data, columns }: Props) => {
           {table.getRowModel().rows.map((row:Row<User>) => (
             <tr key={row.id} className=''>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className='border p-2'>
+                <td key={cell.id} className='border px-2 py-1'>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

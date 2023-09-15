@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { createChat, userChats, findChat, findChats } = require('../controllers/Chat.controller');
+const { createChat, userChats, findChats } = require('../controllers/Chat.controller');
 const authentication = require('../middlewares/Authentication');
 
 router.post('/', authentication, createChat);

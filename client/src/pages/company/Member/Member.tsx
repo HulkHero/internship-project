@@ -1,10 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { usePaginatedUsers } from '../../../ReactKueries/PaginatedUsers'
 import  CustomButton  from '../../../components/CustomButton'
 
-import DataGrid from './DataGrid'
+import DataGrid from '../../../components/DataGrid'
 export interface User{
     firstName:string,
     lastName:string,
@@ -44,7 +43,6 @@ const Member = () => {
       isError,
       error,
       data,
-      isFetching,
       isPreviousData,
     } = usePaginatedUsers(page)
 
@@ -54,7 +52,7 @@ const Member = () => {
 
   return (
     <div>
-        <div className='text-textGray pt-2 font-semibold text-center text-3xl'>
+        <div className='text-textDark pt-2 font-semibold text-center text-3xl'>
             Members
         </div>
         <div >
@@ -63,9 +61,9 @@ const Member = () => {
             </div>
         </div>
         <div className='flex flex-col '>
-          <div className='flex-grow-[10]'>
+          <div className='flex flex-row min-h-[70vh]  justify-center'>
         {isLoading ? (
-  <div>Loading...</div>
+  <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
   <div>Error: {error instanceof Error ? error.message : 'An error occurred'}</div>
 ) : (
@@ -77,7 +75,7 @@ const Member = () => {
 
       <CustomButton
         text={"<"}
-        className='btn btn-secondary btn-sm disabled:bg-blue-300 '
+        className='btn btn-secondary btn-sm disabled:bg-blue-300'
         onClick={() => setPage(old => Math.max(old - 1, 0))}
         disabled={page === 0 }
       />
@@ -91,6 +89,7 @@ const Member = () => {
             setPage(old => old + 1)
           }
         }}
+        
         disabled={isPreviousData || !data?.hasMore}
       />
     </div>

@@ -11,6 +11,8 @@ import CustomInput from '../../../../components/CustomInput';
 import { emailValidation, passwordValidation, textValidation } from '../../../../utils/InputValidations';
 import useFetch from '../../../../hooks/useFetch';
 import CustomButton from '../../../../components/CustomButton';
+import openModal from '../../../../utils/handleModal';
+import Modal from '../../../../components/Modal';
 interface IAddMember{
     firstName:string,
     lastName:string,
@@ -64,6 +66,7 @@ const AddMember = () => {
         }
       }).then((res)=>{
         setLoading(false)
+         openModal("success")
 
       }).catch((err)=>{
         console.log(err)
@@ -74,6 +77,7 @@ const AddMember = () => {
     const {data:roles,error:errorMessage,isLoading}=useFetch<string[]>({endPoint:"/kpi/get",params:`?companyName=${companyName}`})
     return (
         <div className=" flex  justify-center w-full">
+            <Modal variant='success' title="Member Added" description="Member Added Successfully" />
             <div className="bg-white p-4 rounded-md  w-full">
                 <div className="text-3xl font-bold text-center mb-4 ">AddMember</div>
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>

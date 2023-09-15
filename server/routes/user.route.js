@@ -8,15 +8,17 @@ const authentication = require('../middlewares/Authentication');
 
 router.post('/signup', User.userSignup);
 
-router.post('/addMember/:adminId', authentication, authorization.adminAuthz, User.addUser);
+router.post('/addMember/:adminId', authentication, authorization.AdminOrManager, User.addUser);
 
 router.post('/login', User.userLogin)
 
-router.get("/getAllUsers", authentication, authorization.adminAuthz, User.getAllUsers);
+router.get("/getAllUsers", authentication, authorization.AdminOrManager, User.getAllUsers);
 
 router.get('/search/:searche', authentication, User.searchUser);
 
 router.get("/checkEmail/:email", User.checkEmail);
+
+router.post('/logout', authentication, User.logout);
 
 router.get('/hello', authentication, authorization.adminAuthz, (req, res) => {
     res.status(200).json({ msg: "hello" })
