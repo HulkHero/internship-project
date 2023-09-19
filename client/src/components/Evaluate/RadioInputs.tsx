@@ -55,7 +55,6 @@ const RadioInputs = ({onChange ,index}:RadioProps) => {
             <span className='ml-2'>{option.label}</span>
             </label>
             </div>
-
         ))}
       </div>
     

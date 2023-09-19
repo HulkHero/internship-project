@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const User = require("../models/User.model");
 const signToken = require("../helpers/signToken").signToken;
+const Evaluation = require("../models/Evaluation.model");
 
 const addUser = async (req, res) => {
     const { firstName, lastName, email, password, techRole, systemRole, companyName } = req.body;
@@ -67,8 +68,8 @@ const searchUser = async (req, res) => {
     }
 }
 
-const getPaginatedUsers = async (req, res) => {
 
+const getPaginatedUsers = async (req, res) => {
     try {
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
@@ -76,143 +77,305 @@ const getPaginatedUsers = async (req, res) => {
         const skip = (page) * limit;
         const companyName = req.companyName;
 
-        const matchStage = {
+        const matchQuery = {
             companyName: companyName,
         };
 
         if (searche) {
-            matchStage.$or = [
+            matchQuery.$or = [
                 { firstName: { $regex: searche, $options: 'i' } },
                 { lastName: { $regex: searche, $options: 'i' } }
             ];
         }
 
-        const countPipeline = [
-            {
-                $match: matchStage
-            },
-            {
-                $count: 'total'
-            }
-        ];
+        // Fetch users with pagination
+        const users = await User.find(matchQuery)
+            .skip(skip)
+            .limit(limit)
+            .exec();
 
-        const countResult = await User.aggregate(countPipeline);
-        const total = countResult.length > 0 ? countResult[0].total : 0;
 
-        // Determine the current month and year
+        // Fetch evaluations for users within the specified date ranges
+        const userIds = users.map(user => user._id);
+
         const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
+        const fifteenDaysAgo = new Date(currentDate.getTime() - 15 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-        // Determine the start and end dates for the 15-day and 30-day evaluations
-        const fifteenDaysAgo = new Date(currentYear, currentMonth - 1, currentDate.getDate() - 15);
-        const thirtyDaysAgo = new Date(currentYear, currentMonth - 1, currentDate.getDate() - 30);
+        const evaluations15Day = await Evaluation.find({
+            user_id: { $in: userIds },
+            createdAt: { $gte: fifteenDaysAgo, $lte: currentDate },
+            type: "15Day"
+        }).exec();
 
-        const evaluationMatch15Day = {
-            user_id: "$_id",
-            timestamp: { $gte: fifteenDaysAgo, $lte: currentDate },
-            type: "15Day" // Adjust the evaluation type
-        };
 
-        const evaluationMatch30Day = {
-            user_id: "$_id",
-            timestamp: { $gte: thirtyDaysAgo, $lte: currentDate },
-            type: "30Day" // Adjust the evaluation type
-        };
+        const evaluations30Day = await Evaluation.find({
+            user_id: { $in: userIds },
+            createdAt: { $gte: thirtyDaysAgo, $lte: currentDate },
+            type: "30Day"
+        }).exec();
 
-        const aggregationPipeline = [
-            {
-                $match: matchStage
-            },
-            {
-                $lookup: {
-                    from: "evaluation", // Replace with the actual collection name
-                    let: { user_id: "$_id" },
-                    pipeline: [
-                        {
-                            $match: evaluationMatch15Day
-                        }
-                    ],
-                    as: "evaluations15Day"
-                }
-            },
-            {
-                $lookup: {
-                    from: "evaluation", // Replace with the actual collection name
-                    let: { user_id: "$_id" },
-                    pipeline: [
-                        {
-                            $match: evaluationMatch30Day
-                        }
-                    ],
-                    as: "evaluations30Day"
-                }
-            },
-            {
-                $project: {
-                    firstName: 1,
-                    lastName: 1,
-                    techRole: 1,
-                    systemRole: 1,
-                    email: 1,
-                    has15DayEvaluation: {
-                        $gte: [{ $size: "$evaluations15Day" }, 1]
-                    },
-                    has30DayEvaluation: {
-                        $gte: [{ $size: "$evaluations30Day" }, 1]
-                    }
-                }
-            },
-            {
-                $facet: {
-                    paginatedUsers: [
-                        { $skip: skip },
-                        { $limit: limit },
-                    ],
-                    totalUsers: [
-                        { $count: "count" },
-                    ],
-                },
-            },
-            {
-                $unwind: "$totalUsers",
-            },
-            {
-                $project: {
-                    paginatedUsers: 1,
-                    total: "$totalUsers.count",
-                },
-            },
-        ];
+        const mergedUsers = users.map(user => {
+            const userEvaluations15Day = evaluations15Day.filter(evaluation => evaluation.user_id.toString() === user._id.toString());
+            const userEvaluations30Day = evaluations30Day.filter(evaluation => evaluation.user_id.toString() === user._id.toString());
 
-        const result = await User.aggregate(aggregationPipeline);
 
-        if (result.length > 0) {
-            const { paginatedUsers } = result[0];
-            const hasMore = ((page + 1) * limit) < total;
+            const userWithEvaluations = {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                companyName: user.companyName,
+                systemRole: user.systemRole,
+                techRole: user.techRole,
+                Projects: user.Projects,
+                has15DayEvaluation: userEvaluations15Day.length > 0,
+                has30DayEvaluation: userEvaluations30Day.length > 0,
+            };
 
-            res.status(200).json({
-                data: paginatedUsers,
-                page: page,
-                limit: limit,
-                total: total,
-                hasMore: hasMore,
-            });
-        } else {
-            // No results found
-            res.status(200).json({
-                data: [],
-                page: page,
-                limit: limit,
-                total: 0,
-                hasMore: false,
-            });
-        }
+            return userWithEvaluations;
+        })
+
+
+
+        const totalCount = await User.countDocuments(matchQuery);
+
+        // Calculate hasMore
+        const hasMore = ((page + 1) * limit) < totalCount;
+
+        res.status(200).json({
+            data: mergedUsers,
+            page: page,
+            limit: limit,
+            total: totalCount,
+            hasMore: hasMore,
+        });
     } catch (error) {
         console.error("Error fetching users:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
+// const getPaginatedUsers = async (req, res) => {
+
+//     try {
+//         const page = parseInt(req.query.page);
+//         const limit = parseInt(req.query.limit);
+//         const searche = req.query.searche;
+//         const skip = (page) * limit;
+//         const companyName = req.companyName;
+
+//         const matchStage = {
+//             companyName: companyName,
+//         };
+
+//         if (searche) {
+//             matchStage.$or = [
+//                 { firstName: { $regex: searche, $options: 'i' } },
+//                 { lastName: { $regex: searche, $options: 'i' } }
+//             ];
+//         }
+
+//         const countPipeline = [
+//             {
+//                 $match: matchStage
+//             },
+//             {
+//                 $count: 'total'
+//             }
+//         ];
+
+//         const countResult = await User.aggregate(countPipeline);
+//         const total = countResult.length > 0 ? countResult[0].total : 0;
+
+//         // Determine the current month and year
+//         const currentDate = new Date();
+//         const currentYear = currentDate.getFullYear();
+//         const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
+
+//         // Determine the start and end dates for the 15-day and 30-day evaluations
+//         // const fifteenDaysAgo = new Date(currentYear, currentMonth - 1, currentDate.getDate() - 15);
+//         // const thirtyDaysAgo = new Date(currentYear, currentMonth - 1, currentDate.getDate() - 30);
+
+//         const fifteenDaysAgo = new Date(currentDate.getTime() - 15 * 24 * 60 * 60 * 1000);
+//         const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+
+//         console.log(fifteenDaysAgo, thirtyDaysAgo, "fifteenDaysAgo, thirtyDaysAgo")
+//         // eq
+//         const evaluationMatch15Day = {
+//             user_id: "$_id",
+//             createdAt: { $gte: fifteenDaysAgo, $lte: currentDate },
+//             type: "15Day" // Adjust the evaluation type
+//         };
+
+//         const evaluationMatch30Day = {
+//             user_id: "$_id",
+//             createdAt: { $gte: thirtyDaysAgo, $lte: currentDate },
+//             type: "30Day" // Adjust the evaluation type
+//         };
+//         console.log(evaluationMatch15Day, evaluationMatch30Day, "evaluationMatch15Day, evaluationMatch30Day")
+
+//         const aggregationPipeline = [
+//             {
+//                 $match: matchStage
+//             },
+//             {
+//                 $lookup: {
+//                     from: "evaluation", // Replace with the actual collection name
+//                     let: { user_id: "$_id" },
+//                     pipeline: [
+//                         {
+//                             $match: evaluationMatch15Day
+//                         }
+//                     ],
+//                     as: "evaluations15Day"
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: "evaluation", // Replace with the actual collection name
+//                     let: { user_id: "$_id" },
+//                     pipeline: [
+//                         {
+//                             $match: evaluationMatch30Day
+//                         }
+//                     ],
+//                     as: "evaluations30Day"
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     firstName: 1,
+//                     lastName: 1,
+//                     techRole: 1,
+//                     systemRole: 1,
+//                     email: 1,
+//                     evaluations15Day: "$evaluations15Day",
+//                     has15DayEvaluation: {
+//                         $gte: [{ $size: "$evaluations15Day" }, 1]
+//                     },
+//                     has30DayEvaluation: {
+//                         $gte: [{ $size: "$evaluations30Day" }, 1]
+//                     }
+//                 }
+//             },
+//             {
+//                 $facet: {
+//                     paginatedUsers: [
+//                         { $skip: skip },
+//                         { $limit: limit },
+//                     ],
+//                     totalUsers: [
+//                         { $count: "count" },
+//                     ],
+//                 },
+//             },
+//             {
+//                 $unwind: "$totalUsers",
+//             },
+//             {
+//                 $project: {
+//                     paginatedUsers: 1,
+//                     total: "$totalUsers.count",
+//                 },
+//             },
+//         ];
+
+//         const result = await User.aggregate(aggregationPipeline);
+
+//         if (result.length > 0) {
+//             const { paginatedUsers } = result[0];
+//             const hasMore = ((page + 1) * limit) < total;
+
+//             res.status(200).json({
+//                 data: paginatedUsers,
+//                 page: page,
+//                 limit: limit,
+//                 total: total,
+//                 hasMore: hasMore,
+//             });
+//         } else {
+//             // No results found
+//             res.status(200).json({
+//                 data: [],
+//                 page: page,
+//                 limit: limit,
+//                 total: 0,
+//                 hasMore: false,
+//             });
+//         }
+//     } catch (error) {
+//         console.error("Error fetching users:", error);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// }
+
+// const getPaginatedUsers = async (req, res) => {
+//     try {
+//         const page = parseInt(req.query.page);
+//         const limit = parseInt(req.query.limit);
+//         const searche = req.query.searche;
+//         const skip = (page) * limit;
+//         const companyName = req.companyName;
+
+//         const matchQuery = {
+//             companyName: companyName,
+//         };
+
+//         if (searche) {
+//             matchQuery.$or = [
+//                 { firstName: { $regex: searche, $options: 'i' } },
+//                 { lastName: { $regex: searche, $options: 'i' } }
+//             ];
+//         }
+
+//         // Fetch users with pagination
+//         const users = await User.find(matchQuery)
+//             .skip(skip)
+//             .limit(limit)
+//             .exec();
+
+//         // Fetch evaluations for users within the specified date ranges
+//         const userIds = users.map(user => user._id);
+
+//         const fifteenDaysAgo = new Date(currentDate.getTime() - 15 * 24 * 60 * 60 * 1000);
+//         const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+//         const evaluations15Day = await Evaluation.find({
+//             user_id: { $in: userIds },
+//             createdAt: { $gte: fifteenDaysAgo, $lte: currentDate },
+//             type: "15Day"
+//         }).exec();
+
+//         const evaluations30Day = await Evaluation.find({
+//             user_id: { $in: userIds },
+//             createdAt: { $gte: thirtyDaysAgo, $lte: currentDate },
+//             type: "30Day"
+//         }).exec();
+
+//         // Perform additional logic to calculate has15DayEvaluation and has30DayEvaluation
+
+//         // Calculate total count (you can use .countDocuments() for a more efficient count)
+//         const totalCount = await User.countDocuments(matchQuery);
+
+//         // Calculate hasMore
+//         const hasMore = ((page + 1) * limit) < totalCount;
+
+//         res.status(200).json({
+//             data: users,
+//             page: page,
+//             limit: limit,
+//             total: totalCount,
+//             hasMore: hasMore,
+//         });
+//     } catch (error) {
+//         console.error("Error fetching users:", error);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// }
+
+
 
 
 

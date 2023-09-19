@@ -45,6 +45,7 @@ const dataColumns = [
           const date=new Date()
           const now=date.getDay()
           let time= (now===15) ? true :false
+         
           let disable= row.row.original.has15DayEvaluation===true || !time
           // row.row.original.has15DayEvaluation||!time 
       
@@ -53,7 +54,7 @@ const dataColumns = [
               userId:row.row.original._id,
               techRole:row.row.original.techRole,
               type:'15Day'
-          })}` }} className={`btn btn-primary ${disable===false ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>)
+          })}` }} className={`btn btn-primary ${ row.row.original.has15DayEvaluation===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>)
           
 
           }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, createSearchParams } from 'react-router-dom'
 import { usePaginatedProjects } from '../../../../ReactKueries/PaginatedProjects'
 import CustomButton from '../../../../components/CustomButton'
 import DataGrid from '../../../../components/DataGrid'
@@ -89,6 +89,7 @@ const Project = () => {
             className='btn btn-primary btn-sm '
         onClick={() => {
           if (!isPreviousData && data?.hasMore) {
+            // createSearchParams({ page: String(page + 1)})
             setPage(old => old + 1)
           }
         }}

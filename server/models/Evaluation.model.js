@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const userSchema = Schema({
+const evaluationSchema = Schema({
 
     user_id: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
     manager_id: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
@@ -40,7 +40,7 @@ const userSchema = Schema({
 
 
 
-const Evaluation = mongoose.model('Evaluations', userSchema, "evaluation");
+const Evaluation = mongoose.model('Evaluations', evaluationSchema, "evaluation");
 
 module.exports = Evaluation;
 

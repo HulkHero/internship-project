@@ -60,16 +60,16 @@ const Member = () => {
     console.log(searchInputValue)
     setSearche(searchInputValue)
     setPage(0)
-    refetch()
+  
    }
    React.useEffect(() => {
     refetch();
-}, [page,]);
+}, [page,searche]);
  
 
 
   return (
-    <div>
+    <div className='bg-white'>
        <Search isLoading={isLoading} handleSearch={handleSearch}/>
         <div >
             <div className='ml-auto w-fit m-2  '>
@@ -77,7 +77,7 @@ const Member = () => {
             </div>
         </div>
         <div className='flex flex-col '>
-          <div className='flex flex-row min-h-[65vh]  justify-center'>
+          <div className='flex flex-row min-h-[60vh]  justify-center'>
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
@@ -91,7 +91,7 @@ const Member = () => {
 
       <CustomButton
         text={"<"}
-        className='btn btn-secondary btn-sm disabled:bg-blue-300'
+        className='btn btn-primary btn-sm'
         onClick={() => setPage(old => Math.max(old - 1, 0))}
         disabled={page === 0 }
       />
@@ -99,7 +99,7 @@ const Member = () => {
       <span className="mx-2">Page{page + 1}</span>{' '}
       <CustomButton
             text={">"}
-            className='btn btn-secondary btn-sm disabled:bg-blue-300'
+            className='btn btn-primary btn-sm'
         onClick={() => {
           if (!isPreviousData && data.hasMore) {
             setPage(old => old + 1)

@@ -24,6 +24,9 @@ const addEvaluation = async (req, res) => {
                 return res.status(200).json({ msg: "Evaluation added successfully", data: newE })
             }
         }
+        else {
+            return res.status(200).json({ msg: "Evaluation added successfully", data: newE })
+        }
 
     } catch (err) {
         return res.status(400).json({ msg: "Failed", err: err });
