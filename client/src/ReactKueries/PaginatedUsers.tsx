@@ -6,14 +6,19 @@ import {
 import axiosInstance from '../utils/interceptor'
 interface Props{
     page:number
+    limit:number
+    searche:string
+    filter:string
+    key?:string
+
 }
-const PaginatedUsers=(page:number)=>{
-   return axiosInstance.get(`/user/getAllUsers?page=${page}&&limit=10`)
+const PaginatedUsers=({page,limit,searche,filter}:Props)=>{
+   return axiosInstance.get(`/user/getAllUsers?page=${page}&&limit=${limit}&&searche=${searche}&&filter=${filter}`)
 }
 
-export const usePaginatedUsers =(page:number)=> {
-    return useQuery(['paginatedUsers',page ], () => PaginatedUsers(page), {
-         select: (data) => {console.log(data); return data.data},
+export const usePaginatedUsers =(props:Props)=> {
+    return useQuery(['paginatedUsers',props.page ,props.key], () => PaginatedUsers(props), {
+         select: (data) => {console.log(data.data,"h");return data.data},
         
     })
 }

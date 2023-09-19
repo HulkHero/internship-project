@@ -5,7 +5,6 @@ const User = require("../models/User.model");
 const authentication = async (req, res, next) => {
     const bearerToken = req.headers.authorization;
     const token = bearerToken.split(" ")[1];
-    console.log(token, "token")
     let isAuthenticated;
     isAuthenticated = JWT.verify(token, process.env.JWT_SECRET);
     if (isAuthenticated) {

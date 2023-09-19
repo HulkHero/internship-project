@@ -39,12 +39,39 @@ const getPaginatedProjects = async (req, res) => {
     try {
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
+        const selectedValue = req.query.selected;
+        const searchInput = req.query.search;
         const skip = (page) * limit; // Adjusted skip calculation
         const companyName = req.companyName; // Assuming you have a company name in the request
+        let matchStage = {
+            companyName: companyName
+        };
 
+        if (selectedValue === 'Completed') {
+            matchStage.projectEndDate = { $lt: new Date() };
+        } else if (selectedValue === 'Inprogress') {
+            matchStage.projectEndDate = { $gt: new Date() };
+        }
+
+        if (searchInput) {
+            matchStage.$or = [
+                { projectName: { $regex: searchInput, $options: 'i' } },
+                { projectDescription: { $regex: searchInput, $options: 'i' } }
+            ];
+        }
+        const countPipeline = [
+            {
+                $match: matchStage
+            },
+            {
+                $count: 'total'
+            }
+        ];
+
+        const total = (await Project.aggregate(countPipeline))[0]?.total || 0;
         const projects = await Project.aggregate([
             {
-                $match: { companyName: companyName }
+                $match: matchStage
             },
             {
                 $lookup: {
@@ -81,10 +108,8 @@ const getPaginatedProjects = async (req, res) => {
                 $limit: limit
             }
         ]);
-        console.log(projects, "projects")
-        const total = await Project.countDocuments({ companyName: companyName });
 
-
+        // const total = await Project.countDocuments({ companyName: companyName });
         const hasMore = (page + 1) * limit < total;
 
         return res.status(200).json({
@@ -109,8 +134,7 @@ const getSingleProject = async (req, res) => {
             .lean()
             .exec()
         if (project) {
-            console.log(project, "project")
-            // const evaluation=Evaluation.find({companyName,,project_id:_id})
+
             return res.status(200).json({ data: project })
         } else {
             return res.status(400).json({ msg: "Project Not Found" })

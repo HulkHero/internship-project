@@ -1,28 +1,57 @@
 import {useState,useEffect} from 'react'
 import { Kpi } from './Evaluate'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import axiosInstance from '../../utils/interceptor'
 import RadioInputs from './RadioInputs'
 import ProgressBar from './ProgressBar'
 import { useAppSelector } from '../../redux/hooks'
 import { authSelector } from '../../redux/slices/authSlice'
+import Modal from '../Modal'
+import openModal from '../../utils/handleModal'
+
 interface Props {
-    projectId:string,
+    projectId?:string,
     techRole:string,
-    employeeId:string
+    employeeId:string,
+    type:string
 }
 
-const EvaluateCard = ({projectId,techRole,employeeId}: Props) => {
+
+const EvaluateCard = ({projectId,techRole,employeeId,type}: Props) => {
     const managerId=useAppSelector(authSelector)._id
     const [index,setIndex]=useState(0)
     const [kpis,setKpis]=useState<Kpi[]>([])
+    const [disable,setDisable]=useState(true)
+    console.log(employeeId,"employeeId")
 
-  const {data,isLoading,error,isError}=useQuery(["kpis",projectId],()=>{
+  const {data,isLoading,error,isError ,refetch}=useQuery(["kpis",employeeId],()=>{
     return axiosInstance.get(`/kpi/getKpi/${techRole}`)
-  },{select:(data)=>data.data.data.kpiFields})
+  },{select:(data)=>data.data.data.kpiFields,
+    enabled:!!employeeId,
+    refetchInterval:1000*60*60*24,
+  })
 
+  const {data:mutation,mutate ,isLoading:mutationLoading,error:mutationError,isError:mutationIsError}=useMutation({
+     mutationFn: ()=>{
+      return axiosInstance.post(`/evaluation/add`,{
+        employeeId,
+        managerId,
+        projectId,
+        kpis,
+        type:type
+      })
+    },
+    onSuccess:()=>{
+      openModal('success')
+     },
+    onError:()=>{
+    openModal('error')
+  }}
+  )
+   
   useEffect(()=>{
     if(data){
+      console.log("newData")
        setKpis(data)
     }
   },[data])
@@ -30,41 +59,30 @@ const EvaluateCard = ({projectId,techRole,employeeId}: Props) => {
   const handleOptionChange = (selectedValue:string) => {
     console.log('Selected option:', selectedValue);
     kpis[index].kpiScore=Number(selectedValue)
-    // dispatch({type:'ANSWERED',payload:{selectedValue,index}})
+    setDisable(false)
   };
 
-
+  console.log(kpis,"kpis")
+  useEffect(()=>{
+    if(kpis.length>0){
+      setDisable(true)
+    }
+  },[index])
 
   const handleNext=()=>{
      if(index<kpis.length-1){
+       if(kpis[index].kpiScore===undefined){
+          alert("please select an option")
+         return;
+       }
        setIndex(index+1)
      }
      else{
-        console.log("submit")
-        handleSubmit();
+        mutate()
+        // handleSubmit();
      }
   }
 
-  const handleSubmit=async()=>{
-     axiosInstance.post(`/evaluation/add`,{
-      employeeId,
-      managerId,
-      projectId,
-      kpis,
-      type:"project"
-    }).then((res)=>{
-      console.log(res)
-    }).catch((err)=>{
-      console.log(err)
-    })
-    console.log(employeeId,projectId,kpis)
-    
-  }
-  const handlePrev=()=>{
-    if(index>0){
-      setIndex(index-1)
-    }
-  }
 
   return (
     <div className='w-full rounded-md md:w-[80%]  mx-auto '>
@@ -80,7 +98,7 @@ const EvaluateCard = ({projectId,techRole,employeeId}: Props) => {
           <span >  {kpis[index].kpiName}</span>
           
           <span className='text-sm text-gray-500'>
-            Weightage {kpis[index].kpiWeight}
+            Weightage:{"  "}{kpis[index].kpiWeight}
           </span>
         </p>
       </div>
@@ -91,23 +109,16 @@ const EvaluateCard = ({projectId,techRole,employeeId}: Props) => {
     </div> 
     <div>
     <ProgressBar index={index} length={kpis.length}></ProgressBar>
-   {/* <KuizFooter index={index} handleNext={handleNext} handleSkip={handleSkip} state={state}  ></KuizFooter> */}
-   {/* <div>
-      <button onClick={()=>handlePrev()} >Prev</button>
-    </div> */}
-    <div className='bg-red-500'>
-      <div>
-        <button onClick={()=>handleNext()} >{kpis.length-1===index ?"Submit":"Next"}</button>
+    <div className='w-full'>
+      <div className='w-fit ml-auto'>
+        <button  disabled={disable} onClick={()=>handleNext()} className='btn btn-primary disabled:bg-red-300 '>{kpis.length-1===index ?"Submit":"Next"}</button>
       </div>
-      <button onClick={()=>handleNext()} >Next</button>
     </div>
    </div> 
-
+   <Modal variant='success' description='evaluation saved successfully' title='Added' linkText='Next' goBack={true}  ></Modal>
+    <Modal variant='error' description='Something went wrong' title='Error' linkText='Back' goBack={true}  ></Modal>
   </div> :null}
   </div>
-
-
-     
   )
 }
 

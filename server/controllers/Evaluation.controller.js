@@ -18,9 +18,11 @@ const addEvaluation = async (req, res) => {
             companyName
         })
         const newE = await newEvaluation.save()
-        const updateProjects = Project.findOneAndUpdate({ _id: projectId, "projectMembers.member": employeeId }, { $set: { "projectMembers.$.isEvaluated": true, "projectMembers.$.evaluation": newE._id } }).lean().exec()
-        if (updateProjects) {
-            return res.status(200).json({ msg: "Evaluation added successfully", data: newE })
+        if (type == "project") {
+            const updateProjects = Project.findOneAndUpdate({ _id: projectId, "projectMembers.member": employeeId }, { $set: { "projectMembers.$.isEvaluated": true, "projectMembers.$.evaluation": newE._id } }).lean().exec()
+            if (updateProjects) {
+                return res.status(200).json({ msg: "Evaluation added successfully", data: newE })
+            }
         }
 
     } catch (err) {

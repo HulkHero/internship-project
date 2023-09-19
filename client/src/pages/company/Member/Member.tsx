@@ -4,6 +4,8 @@ import { usePaginatedUsers } from '../../../ReactKueries/PaginatedUsers'
 import  CustomButton  from '../../../components/CustomButton'
 
 import DataGrid from '../../../components/DataGrid'
+import { createColumnHelper } from '@tanstack/react-table'
+import Search from './Search'
 export interface User{
     firstName:string,
     lastName:string,
@@ -12,7 +14,9 @@ export interface User{
     _id:string,
     email:string,
 }
+const columnHelper = createColumnHelper<User>()
 const dataColumns = [
+
     {
       header: 'FirstName',
       accessorKey: 'firstName',
@@ -36,6 +40,7 @@ const dataColumns = [
   ]
 const Member = () => {
     const [page, setPage] = React.useState(0)
+    const [searche,setSearche]=React.useState('')
 
      console.log(page)
     const {
@@ -44,24 +49,35 @@ const Member = () => {
       error,
       data,
       isPreviousData,
-    } = usePaginatedUsers(page)
+      
+      refetch
+    } = usePaginatedUsers({page,limit:6,searche:searche,filter:''})
 
-
+   const handleSearch=(e:React.FormEvent<HTMLFormElement>)=>{
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget);
+    let searchInputValue= formData.get("searchinput") as string;
+    console.log(searchInputValue)
+    setSearche(searchInputValue)
+    setPage(0)
+    refetch()
+   }
+   React.useEffect(() => {
+    refetch();
+}, [page,]);
  
 
 
   return (
     <div>
-        <div className='text-textDark pt-2 font-semibold text-center text-3xl'>
-            Members
-        </div>
+       <Search isLoading={isLoading} handleSearch={handleSearch}/>
         <div >
             <div className='ml-auto w-fit m-2  '>
                 <Link to="/company/member/addMember" className='btn btn-secondary btn-sm btn-outline'>Add Member</Link>
             </div>
         </div>
         <div className='flex flex-col '>
-          <div className='flex flex-row min-h-[70vh]  justify-center'>
+          <div className='flex flex-row min-h-[65vh]  justify-center'>
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (

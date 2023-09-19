@@ -31,6 +31,7 @@ const MemberCard = (props:Props ) => {
             search:`?${createSearchParams({
                 userId:props.member._id,
                 techRole:props.member.techRole,
+                type:'project'
             })}` }} className={`btn btn-primary ${disable===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>
             {/* <CustomButton text={"evaluate"}  type={"button"} disabled={true} onClick={()=>{console.log("clicked")}} className='btn btn-primary disabled:text-smoke disabled:text-opacity-70 btn-xs px-4'/> */}
         </div>

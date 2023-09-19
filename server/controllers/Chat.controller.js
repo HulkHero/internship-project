@@ -23,10 +23,10 @@ const userChats = async (req, res) => {
         }).populate('members', '_id firstName lastName systemRole techRole')
             .select({ companyName: 1, _id: 1, members: 1 })
             .lean().exec();
-        console.log(chat)
+
         res.status(200).json(chat);
     } catch (error) {
-        console.log(error)
+
         res.status(500).json(error);
     }
 };

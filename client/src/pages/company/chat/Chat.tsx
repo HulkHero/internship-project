@@ -7,6 +7,10 @@ import { authSelector } from '../../../redux/slices/authSlice';
 import axiosInstance from '../../../utils/interceptor';
 import { useFetchChats } from '../../../ReactKueries/useFetchChats';
 import { IAddMember, User } from '../../../types';
+import withSocket,{SocketHOCProps} from '../../../components/SocketHoc';
+import { useSocket } from '../../../redux/context';
+
+
 
 
 export interface member{
@@ -44,8 +48,11 @@ export interface ISendMessage{
 
 
 const Chat = () => {
-    const socket: { current: Socket } = { current: io("ws://localhost:8800") };
- 
+    // const socket: { current: Socket } = { current: io("ws://localhost:8800") };
+      const socket=useSocket()
+      console.log(socket,"socket")
+    
+    
     const user=useAppSelector(authSelector)
     const [chats, setChats] = useState<IChat[]|undefined>([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
@@ -59,26 +66,32 @@ const Chat = () => {
         setChats(data);
       }
     }, [data]);
-
+   
     useEffect(() => {
-        socket.current = io("ws://localhost:8800");
-        socket.current.emit("new-user-add", user._id);
-        socket.current.on("get-users", (users) => {
+    }, [socket]);
+    useEffect(() => {
+      
+      if(socket){
+        socket.on("get-users", (users) => {
           setOnlineUsers(users);
         });
-      }, [user]);
+      }
+      
+      }, [user,socket]);
       
     useEffect(() => {
-      if (sendMessage!==null) {
-        socket.current.emit("send-message", sendMessage);}
+      if (sendMessage!==null && socket!==null) {
+        socket.emit("send-message", sendMessage);}
       }, [sendMessage]);
 
     useEffect(() => {
-      socket.current.on("recieve-message", (data) => {
+      if(socket){
+      socket.on("recieve-message", (data) => {
         setReceivedMessage(data);
       }
         );
-    }, []);
+    }
+    }, [socket]);
 
   return (
      <div className="w-full flex justify-left   ">

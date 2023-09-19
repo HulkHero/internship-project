@@ -14,9 +14,13 @@ router.post('/login', User.userLogin)
 
 router.get("/getAllUsers", authentication, authorization.AdminOrManager, User.getAllUsers);
 
+router.get("/getEvaluationUsers", authentication, authorization.AdminOrManager, User.getPaginatedUsers);
+
 router.get('/search/:searche', authentication, User.searchUser);
 
 router.get("/checkEmail/:email", User.checkEmail);
+
+
 
 router.post('/logout', authentication, User.logout);
 

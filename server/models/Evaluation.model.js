@@ -9,7 +9,7 @@ const userSchema = Schema({
     project_id: { type: Schema.Types.ObjectId, ref: 'Projects' },
     type: {
         type: String,
-        enum: ['15day', '30day', 'project'],
+        enum: ['15Day', '30Day', 'project'],
     },
     kpis: [{
         kpiName: {

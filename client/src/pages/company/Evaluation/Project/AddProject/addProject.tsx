@@ -6,7 +6,7 @@ import { textLongValidation, textValidation } from '../../../../../utils/InputVa
 import OptionTypeBase, { ActionMeta, GroupBase, OptionProps } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import axiosInstance from '../../../../../utils/interceptor';
-
+import { toast,ToastContainer } from 'react-toastify';
 import CustomButton from '../../../../../components/CustomButton';
 
 interface IAddProject {
@@ -46,7 +46,6 @@ interface IOption extends OptionTypeBase {
   };
 const AddProject: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>(""); 
   const [options, setOptions] = useState<{value:string}[]>([]);
 
 const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>>> = (props) => {
@@ -69,8 +68,8 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
       projectEndDate: new Date(),
     }
   }); 
-  const { register, handleSubmit, formState, getValues ,reset} = form;
-  const { errors,isSubmitSuccessful } = formState;
+  const { register, handleSubmit, formState, getValues ,reset,setError} = form;
+  const { errors,isSubmitSuccessful, } = formState;
 
   const onSubmit = async (data: IAddProject) => {
 
@@ -78,7 +77,10 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
     setIsLoading(true);
      if(options.length<2)
      {
-       alert("Please select atleast two member")
+      setError("projectMembers",{message:"Please select atleast two member"})
+
+      //  alert("Please select atleast two member")
+      toast.error("Please select atleast two member");
        setIsLoading(false);
        return;
      }
@@ -86,7 +88,7 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
       ...data,
       projectMembers:options.map((option)=>option.value)
     }
-
+   console.log(errors,"errors")
     axiosInstance.post('/project/add',bodyData).then((res)=>{
       setIsLoading(false);
     }).catch((err)=>{
@@ -115,7 +117,7 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
       console.log(response.data,"response")
       const users = response.data.map((user: any) => ({
         value: user._id,
-        label: `${user.firstName}  ${user.techRole || "hi"}`,
+        label: `${user.firstName}  ${user.techRole}`,
       }));
       setOptions(users);
       return users;
@@ -129,6 +131,7 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
 }
   return (
     <div className='p-3 ' >
+      <ToastContainer></ToastContainer>
         <div>
             <h1 className='text-2xl text-center text-textDark font-bold'>Add Project</h1>
         </div>
@@ -195,6 +198,7 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
                 loadOptions={fetchOptions}
                 styles={customStyles}
                 />
+                {errors.projectMembers && <p className="text-red-700">{errors.projectMembers.message}</p>}
           </div>
             <div className='my-2'>
             <CustomButton text="Submit" disabled={isLoading} className={'btn-primary'} isLoading={isLoading} type="submit" />

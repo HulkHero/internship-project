@@ -11,6 +11,6 @@ const FetchChats=<T extends {}>(_id:string)=>{
 
 export const useFetchChats =<T extends {} > (_id:string)=> {
     return useQuery(['fetchChat'], () => FetchChats<T>(_id), {
-         select: (data) => {console.log(data); return data.data},
+         select: (data) => {return data.data},
     })
 }

@@ -1,4 +1,4 @@
-import { Row, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, Row, useReactTable } from '@tanstack/react-table'
 import React, { useState } from 'react'
 import {
     flexRender,
@@ -7,27 +7,25 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     SortingState,
-    HeaderGroup
+    HeaderGroup,
+    ColumnPinningState,
+  
 
   } from '@tanstack/react-table'
 
 
 
-interface ColumnDef {
-    header: string
-    accessorKey: string
-    
-}
+
 type Props<T> = {
     data:T[],
-    columns:ColumnDef[]
+    columns:ColumnDef<T>[]
 }
 
 
 const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filtering, setFiltering] = useState('');
-
+  const [pinnedColumns, setPinnedColumns] = useState<ColumnPinningState>({});
   const table = useReactTable({
     data,
     columns,
@@ -35,10 +33,13 @@ const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+  
     state: {
       sorting: sorting,
+      columnPinning: pinnedColumns,
       globalFilter: filtering,
     },
+    onColumnPinningChange: setPinnedColumns,
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
   });
@@ -49,11 +50,12 @@ const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
         type='text'
         value={filtering}
         onChange={(e) => setFiltering(e.target.value)}
-        className='outline-none my-2 px-2 py-1 rounded-lg ring-1 focus:ring-2 focus:ring-blue-500 ring-blue-400 w-full max-w-xs'
-        placeholder='Filter...'
+        className='outline-none my-2 mx-4 px-2 py-1 rounded-lg ring-1 focus:ring-2 focus:ring-darkRed ring-darkRed w-full max-w-xs'
+        placeholder='Search in current data...'
       />
-      <table className='w-full border-collapse'>
-        <thead className='bg-blue-500 text-white'>
+      <div className='overflow-x-auto'>
+      <table className='table'>
+        <thead className=' bg-neutral-100 shadow-md select-none text-black'>
           {table.getHeaderGroups().map((headerGroup:HeaderGroup<T>) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -61,16 +63,28 @@ const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className='px-2 py-1 cursor-pointer'
+                    className='cursor-pointer'
                   >
                     {header.isPlaceholder ? null : (
-                      <div className='bg-blue-500'>
+                      <div className=''>
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
+                            {header.column.getIsSorted() === 'asc' && '🔼'}
+                            {header.column.getIsSorted() === 'desc' && '🔽'}
                       </div>
                     )}
+                    {/* {!header.isPlaceholder && header.column.getCanPin() && (
+                      <div className=''>
+                        <button
+                          onClick={()=>header.column.pin("left")}
+                          className={`${header.column.getIsPinned()?"table-pin-cols ":""} btn btn-secondary btn-sm`}
+                        >
+                          {header.column.getIsPinned() ? 'Unpin' : 'Pin'}
+                        </button>
+                      </div>
+                    )} */}
                   </th>
                 );
               })}
@@ -78,11 +92,11 @@ const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
           ))}
         </thead>
 
-        <tbody>
+        <tbody className='bg-white'>
           {table.getRowModel().rows.map((row:Row<T>) => (
-            <tr key={row.id} className=''>
+            <tr key={row.id} className='hover'>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className='border px-2 py-1'>
+                <td key={cell.id} className=''>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -90,6 +104,7 @@ const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

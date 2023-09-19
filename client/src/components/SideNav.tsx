@@ -8,13 +8,9 @@ const SideNav = () => {
   const [one, setOne] = React.useState(true)
   const [isEActive, setIsEActive] = React.useState(false)
   const handleENavs = () => {
-    console.log(isEActive,"isEActive")
     setOne(true)
     if(isEActive===true){
-     
-      // setIsEActive(false)
       setOpenENavs(!openENavs)
-
     }
     else{
       setOpenENavs(true)
@@ -34,8 +30,8 @@ const SideNav = () => {
         </NavLink>
         
            {openENavs? <><NavLink to="/company/evaluation" onClick={()=>setOne(true)} className={({isActive})=> isActive===true && one===true ? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': '  hover:bg-black hover:bg-opacity-20 pl-5 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>Projects</NavLink>
-            <NavLink to="/company/evaluation/15Days" onClick={()=>setOne(false)} className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': '  hover:bg-black hover:bg-opacity-20 pl-5 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>15Days</NavLink>
-            <NavLink to="/company/evaluation/30Days" onClick={()=>setOne(false)} className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': '  hover:bg-black hover:bg-opacity-20 pl-5 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>30Days</NavLink>
+            <NavLink to="/company/evaluation/timeBase" onClick={()=>setOne(false)} className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': '  hover:bg-black hover:bg-opacity-20 pl-5 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>TimeBase</NavLink>
+
     </> :null}
         <NavLink to="/company/chat" className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': '  hover:bg-black hover:bg-opacity-20 pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>Chat</NavLink>
         <NavLink to="/company/add" className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': '  hover:bg-black hover:bg-opacity-20 pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>Logout</NavLink>

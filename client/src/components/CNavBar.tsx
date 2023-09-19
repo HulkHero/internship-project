@@ -3,26 +3,39 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { authSelector,logOut } from '../redux/slices/authSlice'
 import { useNavigate, useLocation} from 'react-router-dom'
 import Breadcrumbs from './BreadCrumb'
-
-
-
-import {PiSignOutBold} from 'react-icons/pi'
 import axiosInstance from '../utils/interceptor'
 
+import {IoNotificationsOutline,IoLogOutOutline} from 'react-icons/io5'
+import { useSocket } from '../redux/context'
+
+
 const CNavBar = () => {
+
     const data=useAppSelector(authSelector)
+    const socket=useSocket()
     const [route, setRoute] = React.useState<string>("");
+    const [notification,setNotification]=React.useState<string[]>([])
+    const [showSidebar,setShowSidebar]=React.useState<boolean>(false);
+    const [showNotification,setShowNotification]=React.useState<boolean>(false);
     const location = useLocation();
     const navigate=useNavigate()
     const dispatch=useAppDispatch()
     React.useEffect(() => {
-      console.log(location.pathname);
       setRoute(location.pathname);
     }, [location]);
 
+    React.useEffect(()=>{
+      if(socket)
+        socket.on("notification", (data:string) => {
+          setNotification([data,...notification])
+          console.log(data,"nds")
+        });
+
+    },[socket])
+    console.log(notification,"notification")
+
   
   
-    const [showSidebar,setShowSidebar]=React.useState<boolean>(false);
     const toggleSidebar=()=>{
         setShowSidebar(!showSidebar);
     }
@@ -46,13 +59,34 @@ const CNavBar = () => {
                 <Breadcrumbs route={route}></Breadcrumbs>
                 </div> 
                 </div> 
+               <div>
+                <div className={` absolute bg-white w-56 rounded-box text-ligtDark shadow-lg transition-all   ${showNotification===true?"right-0":"-right-[300px] hidden"} top-[9vh] `}>{
+                 notification.map((item,index)=><>
+                   <div>
+                      {item}
+                   </div>
+                 </>
+                  
 
-         <div className=''>
-             <button onClick={()=>{dispatch(logOut());navigate("/")}} className='px-3'>
-              
-              <PiSignOutBold size={20} className='hover:stroke-slate-950'></PiSignOutBold>
-              
-              </button>          
+                  )
+                }
+
+                </div>
+
+               </div>
+
+         <div className='flex items-center justify-center gap-4'>
+              <div>
+                <button onClick={()=>{setShowNotification(!showNotification)}} className='rounded-full indicator '>
+                      <span className="indicator-item badge badge-primary badge-sm">{notification.length}</span> 
+                      <IoNotificationsOutline size={20} className='hover:stroke-darkRed'></IoNotificationsOutline>
+                </button>
+              </div>
+           <div>
+             <button onClick={()=>handleLogout()} className=''>
+                  <IoLogOutOutline size={20} className='hover:stoke-darkRed'></IoLogOutOutline>
+              </button> 
+              </div>         
          </div>
         </div>
 

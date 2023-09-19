@@ -16,34 +16,18 @@ export interface Kpi {
 const Evaluate = () => {
   const projectId=useParams()._id;
   const [searchParams,setSearchParams]=useSearchParams()
-  const userId=searchParams.get("userId")
+  const employeeId=searchParams.get("userId")
   const techRole=searchParams.get("techRole")
+  const type=searchParams.get("type")
 
-
-    
-  const [index,setIndex]=React.useState(0)
-  const [kpis,setKpis]=React.useState<Kpi[]>([])
-
-  const {data,isLoading,error,isError}=useQuery(["kpis",projectId],()=>{
-    return axiosInstance.get(`/kpi/getKpi/${techRole}`)
-  },{select:(data)=>data.data.data.kpiFields})
-
-  useEffect(()=>{
-    if(data){
-       setKpis(data)
-    }
-  },[data])
+  console.log(projectId,employeeId,techRole,type)
   return (
     <>
     <div className="p-3">
     <div className="text-center text-2xl font-bold">Evaluate</div>
-    {kpis && kpis.length>0 &&
-    <div><div>
-        <EvaluateCard projectId={projectId||""}  employeeId={userId||""} techRole={techRole||""}/>
-    </div>
-   
-    </div>
-}
+    {type==="project"?
+        <EvaluateCard type={type||""} projectId={projectId||""}  employeeId={employeeId||""} techRole={techRole||""}/>
+    :<EvaluateCard type={type||""}  employeeId={employeeId||""} techRole={techRole||""}/> }
     </div>
     </>
   )

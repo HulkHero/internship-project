@@ -1,8 +1,8 @@
-
 const mongoose = require("mongoose")
 const cors = require("cors");
 const { userRouter } = require("./routes/user.route");
 const express = require('express');
+const cron = require('node-cron');
 const { kpiRouter } = require("./routes/kpi.route");
 const { projectRouter } = require("./routes/project.route");
 const { chatRouter } = require("./routes/chat.route");
@@ -44,40 +44,93 @@ const activeUsers = new Map();
 
 io.on("connection", (socket) => {
     // Add new user
-    socket.on("new-user-add", (newUserId) => {
-        // Check if user is not added previously
-        if (!activeUsers.has(socket.id)) {
-            activeUsers.set(socket.id, { userId: newUserId });
+    socket.on("new-user-add", ({ newUserId, companyName }) => {
+
+        if (!activeUsers.has(newUserId)) { // Use newUserId as the key
+            activeUsers.set(newUserId, {
+                userId: newUserId,
+                socketId: socket.id,
+                companyName: companyName
+            }); // Store socket ID with user ID
             console.log("New User Connected", activeUsers);
         }
         // Send all active users to the new user
-        console.log("get-users", Array.from(activeUsers.values()))
-        io.emit("get-users", Array.from(activeUsers.values()));
+        console.log("get-users", Array.from(activeUsers.keys()))
+        const users = Array.from(activeUsers.values()).filter((user) => user.companyName === companyName)
+        users.forEach(user => {
+            io.to(user.socketId).emit("get-users", Array.from(activeUsers.keys()));
+        })
+        io.emit("get-users", Array.from(activeUsers.keys())); // Send user IDs
     });
 
     socket.on("disconnect", () => {
         // Remove user from active users
         if (activeUsers.has(socket.id)) {
-            activeUsers.delete(socket.id);
+            const userId = Array.from(activeUsers.values()).find((user) => user.socketId === socket.id);
+            activeUsers.delete(userId); // Remove by user ID
             console.log("User Disconnected", activeUsers);
             // Send all active users to all users
-            io.emit("get-users", Array.from(activeUsers.values()));
+            io.emit("get-users", Array.from(activeUsers.keys())); // Send user IDs
         }
     });
 
     // Send a message to a specific user
     socket.on("send-message", (data) => {
         const { receiverId } = data;
-        for (const [socketId, user] of activeUsers.entries()) {
-            if (user.userId === receiverId) {
-                io.to(socketId).emit("receive-message", data);
-                break; // Stop searching once the user is found and the message is sent
-            }
+        console.log(data, "data")
+        const receiver = Array.from(activeUsers.values()).find((user) => user.userId === receiverId);
+        if (receiver) {
+            io.to(receiver.socketId).emit("receive-message", data);
         }
     });
 });
 
+// const activeUsers = new Map();
 
+// io.on("connection", (socket) => {
+//     // Add new user
+//     socket.on("new-user-add", (newUserId) => {
+//         // Check if user is not added previously
+//         if (!activeUsers.has(socket.id)) {
+//             activeUsers.set(socket.id, { userId: newUserId });
+//             console.log("New User Connected", activeUsers);
+//         }
+//         // Send all active users to the new user
+//         console.log("get-users", Array.from(activeUsers.values()))
+//         io.emit("get-users", Array.from(activeUsers.values()));
+//     });
+
+//     socket.on("disconnect", () => {
+//         // Remove user from active users
+//         if (activeUsers.has(socket.id)) {
+//             activeUsers.delete(socket.id);
+//             console.log("User Disconnected", activeUsers);
+//             // Send all active users to all users
+//             io.emit("get-users", Array.from(activeUsers.values()));
+//         }
+//     });
+
+//     // Send a message to a specific user
+//     socket.on("send-message", (data) => {
+//         const { receiverId } = data;
+//         console.log(data, "data")
+//         for (const [socketId, user] of activeUsers.entries()) {
+//             if (user.userId === receiverId) {
+//                 io.to(socketId).emit("receive-message", data);
+//                 break; // Stop searching once the user is found and the message is sent
+//             }
+//         }
+//     });
+// });
+
+cron.schedule('0 8 15,30 * *', () => {
+    console.log('running a task  ');
+});
+
+cron.schedule('* * * * *', () => {
+    console.log('running a task every 1 minute');
+    io.emit("notification", "its time for evaluation")
+})
 
 
 app.use(express.static('public'));
