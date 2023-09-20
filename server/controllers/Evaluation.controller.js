@@ -9,12 +9,17 @@ const addEvaluation = async (req, res) => {
         const { employeeId, managerId, projectId, type, kpis, } = req.body;
         const companyName = req.companyName;
         console.log(req.body, "req.body")
+
+        const score = kpis.reduce((acc, curr) => acc + (curr.kpiScore * (curr.kpiWeight * 0.1)), 0)
+        const threshold = kpis.reduce((acc, curr) => acc + (curr.kpiThreshold * (curr.kpiWeight * 0.1)), 0)
         const newEvaluation = new Evaluation({
             user_id: employeeId,
             manager_id: managerId,
             project_id: projectId,
             type,
             kpis,
+            score,
+            threshold,
             companyName
         })
         const newE = await newEvaluation.save()

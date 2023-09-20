@@ -15,13 +15,13 @@ import ProtectedRoute from './ProtectRoute';
 import Member from './pages/Company/Member/Member';
 import LayoutMember from './pages/Company/Member/LayoutMember';
 import LayoutEvaluation from './pages/Company/Evaluation/LayoutEvaluation';
-import Day15Evaluation from './pages/Company/Evaluation/TimeBase/15DayEvaluation';
-import Day30Evaluation from './pages/Company/Evaluation/TimeBase/Day30Evaluation';
+
 import Project from './pages/Company/Evaluation/Project/Project';
 import DetailPage from './pages/Company/Evaluation/Project/[_id]/DetailPage';
 import Evaluate from './components/Evaluate/Evaluate';
+import '/node_modules/react-grid-layout/css/styles.css'
+import '/node_modules/react-resizable/css/styles.css'
 
-import withSocket from './components/SocketHoc';
 import { SocketProvider } from './redux/context';
 import TimeBase from './pages/Company/Evaluation/TimeBase/TimeBase';
 const queryClient = new QueryClient()

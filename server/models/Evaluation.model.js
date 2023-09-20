@@ -30,6 +30,14 @@ const evaluationSchema = Schema({
             required: true,
         }
     }],
+    score: {
+        type: Number,
+        required: true,
+    },
+    threshold: {
+        type: Number,
+        required: true,
+    },
     companyName: {
         type: String,
         required: true,

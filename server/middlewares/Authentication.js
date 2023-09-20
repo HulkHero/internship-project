@@ -1,6 +1,5 @@
 const JWT = require("jsonwebtoken");
-const Employee = require("../models/Employee.model");
-const Manager = require("../models/Manager.model");
+
 const User = require("../models/User.model");
 const authentication = async (req, res, next) => {
     const bearerToken = req.headers.authorization;
