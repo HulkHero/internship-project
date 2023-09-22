@@ -1,102 +1,44 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-
 import CustomInput from '../../../../../components/CustomInput';
 import { textLongValidation, textValidation } from '../../../../../utils/InputValidations';
-import OptionTypeBase, { ActionMeta, GroupBase, OptionProps } from 'react-select';
+import  { ActionMeta, GroupBase, } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import axiosInstance from '../../../../../utils/interceptor';
 import { toast,ToastContainer } from 'react-toastify';
 import CustomButton from '../../../../../components/CustomButton';
-
-interface IAddProject {
-  projectName: string;
-  projectDescription: string;
-  teamName: string;
-  projectMembers: string[];
-  projectStartDate: Date;
-  projectEndDate: Date;
-}
-
-interface IOption extends OptionTypeBase {
-  value: string;
-  label: string;
-  role: string;
-}
-
-
-  type CustomOptionProps<Option, IsMulti extends boolean, Group extends GroupBase<Option>> = {
-    innerProps: React.HTMLProps<HTMLDivElement>;
-    label: string;
-   
-  } & OptionProps<Option, IsMulti, Group>;
-  
-
-  const customStyles = {
-    option: (provided:any, state:any) => ({
-      ...provided,
-      borderBottom: '4px dotted #ccc',
-      color: state.isSelected ? '#fff' : '#000',
-      backgroundColor: state.isSelected ? '#007bff' : '#fff',
-      '&:hover': {
-        backgroundColor: state.isSelected ? '#007bff' : '#f2f2f2',
-        color: state.isSelected ? '#fff' : '#ff0000',
-      },
-    }),
-  };
-const AddProject: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [options, setOptions] = useState<{value:string}[]>([]);
+import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { MutationError } from '../../../../../types';
+import { IAddProject,IOption,CustomOptionProps } from './types';
 
 const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>>> = (props) => {
-    console.log(props.data?.role,"innerProps")
-    return (
-      <div className='flex flex-col bg-neutral-100  ' {...props.innerProps}>
-        <div  className='text-md mb-0 pb-0'>{props.label}</div>
-        <div className='text-xs pl-2 mt-0 pt-0 opacity-80' >{props.data.role}</div>
-      </div>
-    );
-  };
-  
+  return (
+    <div className='flex flex-col bg-neutral-100 focus:bg-red-300 active:bg-red-400 cursor-pointer hover:bg-red-300 ' {...props.innerProps}>
+      <div  className='text-md mb-0 pb-0'>{props.label}</div>
+      <div className='text-xs pl-2 mt-0 pt-0 opacity-80' >{props.data.role}</div>
+    </div>
+  );
+};
+
+
+const AddProject: React.FC = () => {
+
+  const [options, setOptions] = useState<{value:string}[]>([]);
+
   const form = useForm<IAddProject>({
-    defaultValues: {
-      projectName: "",
-      projectDescription: "",
-      teamName: "",
-      projectMembers: [""],
-      projectStartDate: new Date(),
-      projectEndDate: new Date(),
-    }
+      defaultValues: {
+        projectName: "",
+        projectDescription: "",
+        teamName: "",
+        projectMembers: [""],
+        projectStartDate: new Date(),
+        projectEndDate: new Date(),
+      }
   }); 
+
   const { register, handleSubmit, formState, getValues ,reset,setError} = form;
   const { errors,isSubmitSuccessful, } = formState;
-
-  const onSubmit = async (data: IAddProject) => {
-
-    console.log(data);
-    setIsLoading(true);
-     if(options.length<2)
-     {
-      setError("projectMembers",{message:"Please select atleast two member"})
-
-      //  alert("Please select atleast two member")
-      toast.error("Please select atleast two member");
-       setIsLoading(false);
-       return;
-     }
-    const bodyData={
-      ...data,
-      projectMembers:options.map((option)=>option.value)
-    }
-   console.log(errors,"errors")
-    axiosInstance.post('/project/add',bodyData).then((res)=>{
-      setIsLoading(false);
-    }).catch((err)=>{
-      setIsLoading(false);
-    })
-  };
-
-  const startValue = getValues("projectStartDate");
 
   useEffect(() => {
     if (isSubmitSuccessful===true) {
@@ -108,8 +50,38 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
         projectStartDate: new Date(),
         projectEndDate: new Date(),
       });
+      setOptions([]);
     }
   }, [isSubmitSuccessful]);
+
+  const onSubmit = async (data: IAddProject) => {
+    if(options.length<2)
+    {
+     setError("projectMembers",{message:"Please select atleast two member"})
+     toast.error("Please select atleast two member");
+      return;
+    }
+   const bodyData={
+     ...data,
+     projectMembers:options.map((option)=>option.value)
+   }
+    mutate(bodyData)
+  };
+
+  const {mutate,isLoading,} = useMutation((data:IAddProject)=>axiosInstance.post('/project/add',data),{
+    onSuccess:()=>{
+      toast.success("Project Added Successfully");
+    },
+    onError:(err:AxiosError<MutationError>)=>{
+      if(err.response?.status===400){
+        toast.error("Something went wrong");
+      }
+      else{
+        toast.error(err.response?.data.msg);
+      }
+     
+    }
+  });
 
   const fetchOptions = async (inputValue:string) => {
     try {
@@ -117,7 +89,7 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
       console.log(response.data,"response")
       const users = response.data.map((user: any) => ({
         value: user._id,
-        label: `${user.firstName}  ${user.techRole}`,
+        label: `${user.firstName}  ${user.techRole||""}`,
       }));
       setOptions(users);
       return users;
@@ -126,9 +98,9 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
       return [];
     }
   };
- const onChange = (option: readonly IOption[], actionMeta: ActionMeta<IOption>) => {
-   setOptions(option as IOption[]);
-}
+  const onChange = (option: readonly IOption[], actionMeta: ActionMeta<IOption>) => {
+      setOptions(option as IOption[]);
+  }  
   return (
     <div className='p-3 ' >
       <ToastContainer></ToastContainer>
@@ -154,51 +126,25 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
                     valueAsDate:true,
                     validate:{
                         range:(v:Date)=>{
-                            
+                            const startValue = getValues("projectStartDate");
                             if(v<startValue)
                             {
-                           return "Project End Date must be greater than Project Start Date"
+                                 return "Project End Date must be greater than Project Start Date"
+                            }
                         }
-                        }
-    
                     },
                     required:"Project End Date is required"
                 }} errors={errors.projectEndDate}/> 
-            {/* <div>
-              <label>
-                Project End Date
-                </label>    
-                <input type="date" id="projectEndDate" placeholder='select date' {...register("projectEndDate",{
-                    valueAsDate:true,
-                    validate:{
-                  
-                        range:(v)=>{
-                            
-                            if(v<startValue)
-                            {
-                           return "Project End Date must be greater than Project Start Date"
-                        }
-                        }
-    
-                    },
-                    required:"Project End Date is required"
-                })}/>
-                {errors.projectEndDate && <p className="text-red-700">{errors.projectEndDate.message}</p>}
-            </div>  */}
-      
-           
-
-         <div>
-              <label className='font-bold text-md'>Team Members</label>
-            <AsyncSelect<IOption, true, GroupBase<IOption>>
-                components={{ Option: CustomOption }}
-                cacheOptions={true}
-                onChange={onChange}
-                isMulti={true}
-                loadOptions={fetchOptions}
-                styles={customStyles}
+        <div>
+        <label className='font-bold text-md'>Team Members</label>
+        <AsyncSelect<IOption, true, GroupBase<IOption>>
+            components={{ Option: CustomOption }}
+            cacheOptions={true}
+            onChange={onChange}
+            isMulti={true}
+            loadOptions={fetchOptions}
                 />
-                {errors.projectMembers && <p className="text-red-700">{errors.projectMembers.message}</p>}
+        {errors.projectMembers && <p className="text-red-700">{errors.projectMembers.message}</p>}
           </div>
             <div className='my-2'>
             <CustomButton text="Submit" disabled={isLoading} className={'btn-primary'} isLoading={isLoading} type="submit" />

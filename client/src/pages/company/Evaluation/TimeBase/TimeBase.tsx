@@ -54,7 +54,7 @@ const dataColumns = [
               userId:row.row.original._id,
               techRole:row.row.original.techRole,
               type:'15Day'
-          })}` }} className={`btn btn-primary ${ row.row.original.has15DayEvaluation===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>)
+          })}` }} className={`btn btn-primary ${ disable===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>)
           
 
           }
@@ -100,11 +100,10 @@ const TimeBase = () => {
     console.log(searchInputValue)
     setSearche(searchInputValue)
     setPage(0)
-    refetch()
    }
    React.useEffect(() => {
     refetch();
-}, [page]);
+}, [searche]);
  
 
 

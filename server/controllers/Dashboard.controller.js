@@ -3,6 +3,8 @@ const User = require('../models/User.model');
 const Project = require('../models/Project.model');
 const Evaluation = require('../models/Evaluation.model');
 const Kpi = require('../models/Kpi.model');
+const ObjectId = require('mongoose').Types.ObjectId;
+
 
 const stats = async (req, res) => {
     try {
@@ -24,6 +26,7 @@ const stats = async (req, res) => {
     }
 }
 
+
 const charts = async (req, res) => {
     console.log("charts");
     try {
@@ -33,8 +36,6 @@ const charts = async (req, res) => {
         const type = req.query.type || "All";
         const role = req.query.role || "All";
         console.log(search, "search, type, role")
-        // Define your Mongoose model for the user and evaluation collections
-
 
         if (search === "'" || search === null || search === undefined || search === "") {
             console.log("search is empty")
@@ -65,10 +66,23 @@ const charts = async (req, res) => {
                     }
                 },
                 {
-                    $match: matchStage2
-
+                    $unwind: "$evaluation"
                 },
-
+                {
+                    $match: {
+                        ...(type === "All" ? {} : { "evaluation.type": type })
+                    }
+                }, {
+                    $group: {
+                        _id: "$_id", // Group by user ID
+                        firstName: { $first: "$firstName" }, // You can include other user fields as needed
+                        lastName: { $first: "$lastName" },
+                        systemRole: { $first: "$systemRole" },
+                        techRole: { $first: "$techRole" },
+                        averageScore: { $avg: "$evaluation.score" }, // Calculate the average score
+                        evaluation: { $push: "$evaluation" } // Collect "15Day" evaluations into an array
+                    }
+                },
                 {
                     $addFields: {
                         averageScore: {
@@ -83,13 +97,75 @@ const charts = async (req, res) => {
                     $limit: 1
                 },
                 {
+                    $project: {
+                        _id: 1,
+                        firstName: 1,
+                        lastName: 1,
+                        systemRole: 1,
+                        techRole: 1,
+                        averageScore: 1,
+                        evaluation: {
+                            type: 1,
+                            score: 1,
+                            threshold: 1,
+                            kpis: 1,
+                            createdAt: 1
+                        }
+                    }
+                }
+
+            ]);
+
+            if (topEmployee.length === 0) {
+                return res.status(404).json({ msg: "No top employee found" });
+            }
+            topEmployee[0].averageScore = topEmployee[0].averageScore.toFixed(2)
+            console.log(topEmployee[0].evaluation, "topEmployee[0].evaluation")
+
+            return res.status(200).json({ msg: "success", data: topEmployee[0] });
+        }
+        else {
+            // Step 1: Query the user collection based on the search criteria
+
+
+            const userAggregate = await User.aggregate([
+                {
+                    $match: {
+                        companyName: companyName,
+                        _id: new ObjectId(search),
+                        ...(role === "All" ? {} : { techRole: role })
+                    }
+
+                }, {
+                    $lookup: {
+                        from: "evaluation", // Replace with your actual collection name
+                        localField: "_id",
+                        foreignField: "user_id",
+                        as: "evaluation"
+                    }
+                },
+                {
                     $unwind: "$evaluation"
                 },
                 {
-                    $sort: { "evaluation.score": -1 } // Sort evaluations by score in descending order
+                    $match: {
+                        // "evaluation.type": "15Day",
+                        ...(type === "All" ? {} : { "evaluation.type": type })
+                    }
                 },
                 {
-                    $limit: 1 // Get the top evaluation
+                    $group: {
+                        _id: "$_id", // Group by user ID
+                        firstName: { $first: "$firstName" }, // You can include other user fields as needed
+                        lastName: { $first: "$lastName" },
+                        systemRole: { $first: "$systemRole" },
+                        techRole: { $first: "$techRole" },
+                        averageScore: { $avg: "$evaluation.score" }, // Calculate the average score
+                        evaluation: { $push: "$evaluation" } // Collect "15Day" evaluations into an array
+                    }
+                },
+                {
+                    $limit: 1
 
                 }, {
                     $project: {
@@ -103,59 +179,20 @@ const charts = async (req, res) => {
                             type: 1,
                             score: 1,
                             threshold: 1,
-                            kpis: 1
+                            kpis: 1,
+                            createdAt: 1
+
                         }
-
-
                     }
                 }
-
-            ]);
-            console.log(topEmployee, "topEmployee")
-            topEmployee[0].averageScore = topEmployee[0].averageScore.toFixed(2)
-            // topEmployee[0].evaluation.forEach((element, index) => {
-            //     element.kpis
-            // });
-
-            if (topEmployee.length === 0) {
-                return res.status(404).json({ msg: "No top employee found" });
+            ])
+            if (userAggregate.length === 0) {
+                return res.status(404).json({ msg: "No data found" });
             }
 
-            return res.status(200).json({ msg: "success", data: topEmployee[0] });
-        }
-        else {
-            // Step 1: Query the user collection based on the search criteria
-            const user = await User.findOne({
-                companyName: companyName,
-                name: { $regex: search, $options: 'i' }, // Case-insensitive search by name
-                ...(role !== "All" ? { techRole: role } : {}),
-            });
-            console.log(user, "user")
-
-            if (!user) {
-                return res.status(404).json({ msg: "User not found" });
-            }
-
-            // Step 2: Query the evaluation collection based on the user's company name, type, and role
-            const evaluationQuery = {
-                companyName: companyName,
-                userId: user._id, // Assuming you have a field to associate evaluations with users
-                ...(type !== "All" ? { type: type } : {}),
-                ...(role !== "All" ? { role: role } : {})
-            };
-
-            const evaluations = await Evaluation.find(evaluationQuery);
-
-            // Step 3: Calculate the average score for the retrieved evaluations
-            let totalScore = 0;
-            let averageScore = 0;
-
-            if (evaluations.length > 0) {
-                totalScore = evaluations.reduce((acc, evaluation) => acc + evaluation.score, 0);
-                averageScore = totalScore / evaluations.length;
-            }
-
-            return res.status(200).json({ msg: "success", user: user, averageScore: averageScore });
+            console.log(userAggregate, "userAggregate")
+            userAggregate[0].averageScore = userAggregate[0].averageScore.toFixed(2)
+            return res.status(200).json({ msg: "success", data: userAggregate[0] });
         }
     } catch (err) {
         console.error(err);
@@ -164,6 +201,110 @@ const charts = async (req, res) => {
 };
 
 
+const managersChart = async (req, res) => {
+    try {
+
+        const companyName = req.companyName;
+
+        const managers = await User.aggregate([
+            {
+                $match: {
+                    companyName: companyName,
+                    systemRole: {
+                        $in: ["manager", "admin"]
+                    }
+                }
+            }, {
+                $lookup: {
+                    from: "projects",
+                    localField: "_id",
+                    foreignField: "projectManager",
+                    as: "projects"
+                }
+
+            }, {
+                $project: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    systemRole: 1,
+                    techRole: 1,
+                    projectsSize: {
+                        $size: "$projects",
+
+                    },
+                    projects: 1
+                }
+            }
+        ])
+        console.log(managers, "managers")
+
+        if (managers.length === 0) {
+            return res.status(404).json({ msg: "No data found" });
+        }
+
+        return res.status(200).json({ msg: "success", data: managers });
+
+
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({ msg: "failed", err: err.message });
+    }
+
+}
+
+const projectsTime = async (req, res) => {
+    try {
+
+        const companyName = req.companyName
+
+        const projects = await Project.aggregate([
+            {
+                $match: {
+                    companyName: companyName
+                }
+            }, {
+                $addFields: {
+                    completed: {
+                        $gte: ["$projectEndDate", new Date()]
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    employeesSize: {
+                        $size: "$projectMembers"
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    projectName: 1,
+                    projectStartDate: 1,
+                    projectEndDate: 1,
+                    completed: 1,
+                    employeesSize: 1
+                }
+            }
+        ])
+
+        if (projects.length === 0) {
+            return res.status(404).json({ msg: "No data found" });
+        }
+
+        return res.status(200).json({ msg: "success", data: projects });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({ msg: "failed", err: err.message });
+    }
+
+}
+
 module.exports = {
-    stats, charts
+    stats,
+    charts,
+    managersChart,
+    projectsTime
 }

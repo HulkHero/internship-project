@@ -1,3 +1,5 @@
+import { AxiosError } from "axios";
+
 export interface userSignUp{
     firstName: string,
     lastName: string,
@@ -29,3 +31,9 @@ export interface User {
 export interface IAddMember{
     
 }
+
+export interface MutationError{
+    msg:string
+}
+
+

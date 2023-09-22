@@ -15,7 +15,7 @@ const Stats = () => {
     <div className='flex justify-center gap-20 my-3'>
     {isLoading && <div>Loading...</div>}
     {data &&
-    <div className='flex justify-center gap-20 my-3'>
+    <div className='flex  flex-wrap max-sm:gap-2 justify-center sm:gap-10  md:gap-15 lg:gap-20 my-3'>
   <div className="stats shadow min-w-[200px] bg-gradient-to-r from-fuchsia-600 to-pink-600">
   <div className="stat">
     <div className="stat-title">Total Projects</div>

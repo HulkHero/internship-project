@@ -12,12 +12,19 @@ const addProject = async (req, res) => {
         if (!projectName || !projectDescription || !projectMembers || !projectStartDate || !projectEndDate) {
             return res.status(400).json({ msg: "Please enter all fields" });
         }
+        const projectMembersArray = projectMembers.map((mem) => {
+            return {
+                member: mem,
+                isEvaluated: false
+
+            }
+        });
         const newProject = new Project({
             projectName,
             projectDescription,
             projectManager,
             teamName, teamName,
-            projectMembers,
+            projectMembers: projectMembersArray,
             projectStartDate,
             projectEndDate,
             companyName
@@ -26,6 +33,7 @@ const addProject = async (req, res) => {
         if (newP) {
             console.log(newP, "newP")
             const user = await User.findOneAndUpdate({ _id: req._id }, { $push: { Projects: newP._id } })
+            console.log(user, "user")
             return res.status(200).json({ msg: "Project added successfully", data: newP })
         }
     }
@@ -119,7 +127,7 @@ const getPaginatedProjects = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ msg: 'Internal server error' });
+        return res.status(500).json({ msg: 'Something Went Wrong' });
 
     };
 }
@@ -141,7 +149,7 @@ const getSingleProject = async (req, res) => {
         }
 
     } catch (err) {
-        return res.status(400).json({ msg: "something went wrong", err: err.message })
+        return res.status(500).json({ msg: "something went wrong", err: err.message })
 
     }
 }

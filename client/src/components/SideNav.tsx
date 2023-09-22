@@ -2,8 +2,10 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import  {AiOutlineDoubleRight} from "react-icons/ai"
 import {MdOutlineKeyboardDoubleArrowDown} from "react-icons/md"
-
-const SideNav = () => {
+interface Props{
+  sideNav:boolean
+}
+const SideNav = ({sideNav}:Props) => {
   const [openENavs, setOpenENavs] = React.useState(false)
   const [one, setOne] = React.useState(true)
   const [isEActive, setIsEActive] = React.useState(false)
@@ -17,9 +19,10 @@ const SideNav = () => {
       
     }
   }
+  console.log(sideNav,"sideNav")
 
   return (
-    <div className={` transition-all box shadow-md  top-16  min-h-[91.3vh] w-[150px] sm:min-w-[200px] md:[250px] bg-ligtDark`}>
+    <div className={`relative ${sideNav===true?"l":"hidden"} sm:block   transition-all box shadow-md   min-h-[91.3vh] w-[150px] sm:min-w-[200px] md:[250px] bg-ligtDark`}>
     <div className=' text-white flex flex-col py-3 space-y-2 ml-2'>
         <NavLink to="/company/"  className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': ' hover:bg-black hover:bg-opacity-20 pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>Dashboard</NavLink>
         <NavLink to="/company/Member" className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': ' hover:bg-black hover:bg-opacity-20 pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>Members</NavLink>

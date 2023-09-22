@@ -6,12 +6,17 @@ import { Outlet } from 'react-router-dom'
 import SideNav from '../../components/SideNav'
 import { ToastContainer } from 'react-toastify'
 const Company = () => {
+  const [sideNav,setSideNav]=React.useState(false)
+  const toggleSideNav=()=>{
+    setSideNav(!sideNav)
+  }
+
   return (
     <div>
-      <CNavBar/>
+      <CNavBar toggleSideNav={toggleSideNav}/>
       {/* <ToastContainer/> */}
       <div className='flex flex-row overflow-x-hidden'>
-       <SideNav></SideNav>
+          <SideNav sideNav={sideNav} ></SideNav>
        <ToastContainer/>
        <div className='h-[91vh] overflow-y-scroll w-full overflow-x-hidden'> <Outlet></Outlet></div>
       </div>

@@ -23,13 +23,13 @@ const withSocket = <P extends object>(WrappedComponent: React.ComponentType<P & 
             });
            
            
-            // return () => {
-            //     console.log("disconnecting")
-            //     // Clean up the socket connection when the component unmounts
-            //     if (socketRef.current) {
-            //         socketRef.current.disconnect();
-            //     }
-            // };
+            return () => {
+                console.log("disconnecting")
+                // Clean up the socket connection when the component unmounts
+                if (socketRef.current) {
+                    socketRef.current.disconnect();
+                }
+            };
         }, []);
 
         return <WrappedComponent {...props} socket={socketRef.current as Socket} />;

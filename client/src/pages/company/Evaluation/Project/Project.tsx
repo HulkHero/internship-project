@@ -1,10 +1,11 @@
 import React from 'react'
-import { Link, createSearchParams } from 'react-router-dom'
+import { Link,} from 'react-router-dom'
 import { usePaginatedProjects } from '../../../../ReactKueries/PaginatedProjects'
 import CustomButton from '../../../../components/CustomButton'
 import DataGrid from '../../../../components/DataGrid'
 import { dataColumns } from './DataColumns'
 import SearchFilter from './SearchFilter'
+import { AxiosError } from 'axios'
 
 export interface Project {
     _id: string,
@@ -56,19 +57,15 @@ const Project = () => {
         <div>
            <SearchFilter  handleSearch={handleSearch}/>
         </div>
-         <div className='w-fit ml-auto my-2'>
+        <div className='w-fit ml-auto my-2'>
             <Link to="/company/evaluation/addProject" className='btn btn-outline btn-primary btn-sm'>Add Project</Link>
-         </div>
-        <div>             
         </div>
-
-      
         <div className='flex flex-col '>
           <div className='flex flex-row min-h-[60vh]  justify-center'>
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
-  <div>Error: {error instanceof Error ? error.message : 'An error occurred'}</div>
+  <div>Error: {error instanceof AxiosError ? error.message : 'An error occurred'}</div>
 ) : (
     <DataGrid data={data.data} columns={dataColumns}></DataGrid>
 )}

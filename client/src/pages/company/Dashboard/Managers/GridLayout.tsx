@@ -3,40 +3,35 @@ import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import RadarChart from "./ChartComponents/RadarChart";
-import { Evaluation, Kpis } from "./types";
-import LineChart from "./ChartComponents/LineChart";
-import Bar from "./SearchBar";
-import BarChart from "./ChartComponents/BarChart";
-import DonutChart from "./ChartComponents/DonutChart";
+
+import { Evaluation, Kpis } from "../types";
+import axiosInstance from "../../../../utils/interceptor";
+import DoghnutChart from "./DoghnutChart";
+import PieChart from "./PieChart";
+import PolarAreaChart from "./PolarAreaChart";
+
 
 interface Props {
-  evaluation:Evaluation[]
+  evaluation?:Evaluation[]
 }
 const layouts = {
     lg: [
       { i: "1", x: 0, y: 0, w: 1, h: 1 },
       { i: "2", x: 1, y: 0, w: 1, h: 1 },
       { i: "3", x: 2, y: 0, w: 1, h: 1 },
-      { i: "4", x: 0, y: 1, w: 1, h: 1 },
-      { i: "5", x: 1, y: 1, w: 1, h: 1 },
-      { i: "6", x: 2, y: 1, w: 1, h: 1 },
+
     ],
     md: [
         { i: "1", x: 0, y: 0, w: 1, h: 1 },
         { i: "2", x: 2, y: 0, w: 1, h: 1 },
         { i: "3", x: 0, y: 1, w: 1, h: 1 },
-        { i: "4", x: 2, y: 1, w: 1, h: 1 },
-        { i: "5", x: 0, y: 2, w: 1, h: 1 },
-        { i: "6", x: 2, y: 2, w: 1, h: 1 },
+
     ],
     sm: [
       { i: "1", x: 0, y: 0, w: 1, h: 1 },
       { i: "2", x: 0, y: 1, w: 1, h: 1 },
       { i: "3", x: 0, y: 2, w: 1, h: 1 },
-      { i: "4", x: 0, y: 3, w: 1, h: 1 },
-      { i: "5", x: 0, y: 4, w: 1, h: 1 },
-      { i: "6", x: 0, y: 5, w: 1, h: 1 },
+
     ],
   };
 
@@ -44,9 +39,21 @@ const layouts = {
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const GridLayout = ({evaluation}:Props) => {
-  if(evaluation?.length===0){
-    return <div>no evaluations found</div>
-  }
+
+   
+const {data:managerData,isLoading:managerLoading}=useQuery(['getManagers'],()=>{
+    return axiosInstance.get('/dashboard/managers')
+},{
+    select:(data)=>data.data.data
+})
+
+
+  const {data:projectData,isLoading,isError,error}=useQuery(['getProjects'],()=>{
+    return axiosInstance.get('/dashboard/projectsTime')
+},{
+    select:(data)=>data.data.data
+})
+
 
 
  
@@ -62,18 +69,15 @@ const GridLayout = ({evaluation}:Props) => {
       }}
       rowHeight={350}
     >
-
-      <div className="bg-white flex justify-center" key="2">
-        <LineChart evaluation={evaluation}></LineChart>
-      </div>
       <div className="bg-white flex justify-center" key="1">
-        <RadarChart evaluation={evaluation}></RadarChart>
+        {managerData && <DoghnutChart data={managerData}></DoghnutChart>}
       </div>
-      <div className="bg-white flex justify-center" key="3">
-        <BarChart evaluation={evaluation}></BarChart>
+
+      <div className="bg-white" key="2">
+        {projectData &&  <PieChart data={projectData}></PieChart>}
       </div>
-      <div className="bg-white" key="4">
-        <DonutChart evaluation={evaluation}></DonutChart>
+      <div className="bg-white" key="3">
+        {projectData &&  <PolarAreaChart data={projectData}></PolarAreaChart>}
       </div>
     </ResponsiveGridLayout>
   );
