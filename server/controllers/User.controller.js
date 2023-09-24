@@ -5,7 +5,7 @@ const Evaluation = require("../models/Evaluation.model");
 
 const addUser = async (req, res) => {
     const { firstName, lastName, email, password, techRole, systemRole, companyName } = req.body;
-    console.log(req.body, "req.body")
+
     if (!firstName || !lastName || !email || !password || !techRole || !systemRole) {
         return res.status(400).json({ msg: "Please enter all fields" });
     }

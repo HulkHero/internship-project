@@ -5,7 +5,16 @@ const User = require('../models/User.model');
 const addKpi = async (req, res) => {
     try {
         const { techRole, companyName, kpis } = req.body;
-        console.log(req.body)
+        if (!techRole || !companyName || !kpis) {
+            return res.status(400).json({ msg: "Please enter all fields" });
+        }
+
+        const alreadyPresent = await Kpi.findOne({ techRole: techRole, companyName: companyName });
+        if (alreadyPresent) {
+            return res.status(400).json({ msg: "KPIs already present for this role" });
+        }
+
+
         const kpi = new Kpi({ techRole, companyName, kpiFields: kpis });
 
         const response = await kpi.save();
