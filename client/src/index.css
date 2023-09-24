@@ -25,3 +25,12 @@ code {
 body {
   background-color:"black";
 }
+
+.btn.btn-primary:disabled {
+  @apply bg-red-300 text-white text-opacity-60 
+
+}
+.btn.btn-secondary:disabled {
+  @apply bg-blue-300 text-white text-opacity-60 
+
+}

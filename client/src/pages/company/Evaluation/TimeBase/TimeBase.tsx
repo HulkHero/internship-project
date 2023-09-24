@@ -1,89 +1,17 @@
 import React from 'react'
 import { useEvaluationUsers } from '../../../../ReactKueries/PaginatedEUsers'
 import  CustomButton  from '../../../../components/CustomButton'
-
 import DataGrid from '../../../../components/DataGrid'
-import { CellContext, createColumnHelper } from '@tanstack/react-table'
-import Search from '../../Member/Search'
 import Day15Evaluation from './15DayEvaluation'
 import Day30Evaluation from './Day30Evaluation'
-import { Link, createSearchParams } from 'react-router-dom'
+import { User, dataColumns} from './dataColumns'
+import SearchFilter from '../../../../components/SearchFilter'
 
-export interface User{
-    firstName:string,
-    lastName:string,
-    systemRole:string,
-    techRole:string,
-    has15DayEvaluation:boolean,
-    has30DayEvaluation:boolean,
-    _id:string,
-    email:string,
-}
-const columnHelper = createColumnHelper<User>()
-const dataColumns = [
 
-    {
-      header: 'FirstName',
-      accessorKey: 'firstName',
-    },
-    {
-      header: 'LastName',
-      accessorKey: 'lastName',
-    },
-    {
-      header: 'SystemRole',
-      accessorKey: 'systemRole', 
-    },
-    {
-        header: 'TechRole',
-        accessorKey: 'techRole',
-    },
-    {
-        header: '15Day',
-        accessorKey: 'has15DayEvaluation',
-        cell:(row:CellContext<User,unknown>)=>{
-          const date=new Date()
-          const now=date.getDay()
-          let time= (now===15) ? true :false
-         
-          let disable= row.row.original.has15DayEvaluation===true || !time
-          // row.row.original.has15DayEvaluation||!time 
-      
-          return(<Link to={{pathname:`/company/evaluation/timeBase/evaluate`,
-          search:`?${createSearchParams({
-              userId:row.row.original._id,
-              techRole:row.row.original.techRole,
-              type:'15Day'
-          })}` }} className={`btn btn-primary ${ disable===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>)
-          
-
-          }
-    },
-    {
-        header: '30Day',
-        accessorKey: 'has30DayEvaluation',
-        cell:(row:CellContext<User,unknown>)=>{
-          const date=new Date()
-          const now=date.getDay()
-          let time= (now===30 ) ? true :false
-          let disable= row.row.original.has15DayEvaluation===true || !time
-          // row.row.original.has15DayEvaluation||!time 
-      
-          return(<Link to={{pathname:`/company/evaluation/timeBase/evaluate`,
-          search:`?${createSearchParams({
-              employeeId:row.row.original._id,
-              techRole:row.row.original.techRole,
-              type:'30Day'
-          })}` }} className={`btn btn-primary ${disable===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>)
-        }
-    }
-
-  ]
 const TimeBase = () => {
     const [page, setPage] = React.useState(0)
     const [searche,setSearche]=React.useState('')
 
-     console.log(page)
     const {
       isLoading,
       isError,
@@ -109,7 +37,7 @@ const TimeBase = () => {
 
   return (
     <div className='pb-5'>
-       <Search isLoading={isLoading} handleSearch={handleSearch}/>
+       <SearchFilter title='Members' select={false} handleSearch={handleSearch}/>
        <div className='flex flex-row justify-around my-2'>
           <div>
             <div>
@@ -133,7 +61,7 @@ const TimeBase = () => {
 ) : isError ? (
   <div>Error: {error instanceof Error ? error.message : 'An error occurred'}</div>
 ) : (
-    <DataGrid data={data.data} columns={dataColumns}></DataGrid>
+    <DataGrid<User> data={data.data} columns={dataColumns}></DataGrid>
 )}
       </div>
       

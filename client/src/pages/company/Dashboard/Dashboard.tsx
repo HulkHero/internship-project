@@ -35,9 +35,7 @@ const Dashboard = () => {
      setSelectRole(formData.get("selectRole") as string);
   }
   React.useEffect(() => {
-    console.log(searche,selectType,selectRole,"hi")
     refetch()
-
   }, [searche,selectType,selectRole])
 
   return (

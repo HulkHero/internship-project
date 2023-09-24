@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { callback } from 'chart.js/dist/helpers/helpers.core';
+import debounce from 'lodash.debounce';
 export const textValidation =(name:string)=> {
    return{
 
@@ -45,17 +47,17 @@ export const emailValidation =()=> {
             message: "Invalid Email",
             },
             validate:{
-                unikue: async(value:string)=> {
-                    const res=await axios.get(`http://localhost:5000/user/checkEmail/${value}`)
-                    console.log(res.data)
-                    if(res?.data?.length>0)
-                    {
-                     return (`Email already exists` )
-                    }else{
-
-                    }
-
-                   
+                unikue:async(value:string)=> {
+                       //sends rekuest only when email is valid                  
+                        const res=await axios.get(`http://localhost:5000/user/checkEmail/${value}`)
+                        console.log(res.data)
+                        if(res?.data?.length>0)
+                        {
+                         return (`Email already exists` )
+                        }else{
+    
+                        }  
+                                    
                 }
             }
     }

@@ -11,6 +11,8 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { MutationError } from '../../../../../types';
 import { IAddProject,IOption,CustomOptionProps } from './types';
+import { fetchOptions } from '../../../../../utils/fetchOptionsDebounce';
+
 
 const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>>> = (props) => {
   return (
@@ -50,11 +52,11 @@ const AddProject: React.FC = () => {
         projectStartDate: new Date(),
         projectEndDate: new Date(),
       });
-      setOptions([]);
     }
   }, [isSubmitSuccessful]);
 
   const onSubmit = async (data: IAddProject) => {
+
     if(options.length<2)
     {
      setError("projectMembers",{message:"Please select atleast two member"})
@@ -83,21 +85,6 @@ const AddProject: React.FC = () => {
     }
   });
 
-  const fetchOptions = async (inputValue:string) => {
-    try {
-      const response = await axiosInstance.get(`/user/search/${inputValue}`);
-      console.log(response.data,"response")
-      const users = response.data.map((user: any) => ({
-        value: user._id,
-        label: `${user.firstName}  ${user.techRole||""}`,
-      }));
-      setOptions(users);
-      return users;
-    } catch (err) {
-      console.error(err);
-      return [];
-    }
-  };
   const onChange = (option: readonly IOption[], actionMeta: ActionMeta<IOption>) => {
       setOptions(option as IOption[]);
   }  
@@ -135,17 +122,18 @@ const AddProject: React.FC = () => {
                     },
                     required:"Project End Date is required"
                 }} errors={errors.projectEndDate}/> 
-        <div>
-        <label className='font-bold text-md'>Team Members</label>
-        <AsyncSelect<IOption, true, GroupBase<IOption>>
-            components={{ Option: CustomOption }}
-            cacheOptions={true}
-            onChange={onChange}
-            isMulti={true}
-            loadOptions={fetchOptions}
-                />
-        {errors.projectMembers && <p className="text-red-700">{errors.projectMembers.message}</p>}
-          </div>
+            <div>
+              <label className='font-bold text-md'>Team Members</label>
+              <AsyncSelect<IOption, true, GroupBase<IOption>>
+                  components={{ Option: CustomOption}}
+                  cacheOptions={true}
+                  name="projectMembers"
+                  onChange={onChange}
+                  isMulti={true}
+                  loadOptions={fetchOptions<IOption>}
+                      />
+              {errors.projectMembers && <p className="text-red-700">{errors.projectMembers.message}</p>}
+            </div>
             <div className='my-2'>
             <CustomButton text="Submit" disabled={isLoading} className={'btn-primary'} isLoading={isLoading} type="submit" />
             </div>

@@ -72,7 +72,7 @@ const CNavBar = ({toggleSideNav}:Props) => {
                <div>
                 <div className={` absolute bg-white w-56 rounded-box text-ligtDark shadow-lg transition-all   ${showNotification===true?"right-0":"-right-[300px] hidden"} top-[9vh] `}>{
                  notification.map((item,index)=><>
-                   <div>
+                   <div key={index}>
                       {item}
                    </div>
                  </>

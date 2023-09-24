@@ -24,6 +24,7 @@ import '/node_modules/react-resizable/css/styles.css'
 
 import { SocketProvider } from './redux/context';
 import TimeBase from './pages/Company/Evaluation/TimeBase/TimeBase';
+import AuthZProtect from './AuthZProtect';
 const queryClient = new QueryClient()
 
 // const SocketCompany=withSocket(Chat)
@@ -43,13 +44,13 @@ function App() {
       <Route path="*" element={<div>404</div>}/>
      
       <Route path="/company" element={<ProtectedRoute><SocketProvider><Company></Company></SocketProvider></ProtectedRoute>}>
-        <Route index element={<Dashboard/>}/>
-        <Route path="Member" element={<LayoutMember/>}>
+        <Route index element={<AuthZProtect roles={["admin"]}><Dashboard/></AuthZProtect>}/>
+        <Route path="Member" element={<AuthZProtect roles={["admin","manager"]}><LayoutMember/></AuthZProtect>}>
            <Route index element={<Member/>}/>
            <Route path="addMember" element={<AddMember/>}/>
         </Route>
-        <Route path="addKpi" element={<AddKpi/>}/>
-        <Route path="evaluation" element={<LayoutEvaluation/>}>
+        <Route path="addKpi" element={<AuthZProtect roles={["admin","manager"]}><AddKpi/></AuthZProtect>}/>
+        <Route path="evaluation" element={<AuthZProtect roles={["admin","manager"]}><LayoutEvaluation/></AuthZProtect>}>
             <Route index element={<Project/>}/>
             <Route path=":_id" element={<DetailPage></DetailPage>}/>
             <Route path=":_id/evaluate" element={<Evaluate></Evaluate>}/>

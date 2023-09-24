@@ -14,7 +14,6 @@ const Company = () => {
   return (
     <div>
       <CNavBar toggleSideNav={toggleSideNav}/>
-      {/* <ToastContainer/> */}
       <div className='flex flex-row overflow-x-hidden'>
           <SideNav sideNav={sideNav} ></SideNav>
        <ToastContainer/>

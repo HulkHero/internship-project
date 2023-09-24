@@ -1,9 +1,8 @@
 import { CellContext, SortingFn,  } from '@tanstack/react-table'
 import { DateTime } from 'luxon'
-import { Project } from './Project'
+import { Project } from './types'
 import { Link } from 'react-router-dom'
 const MySort:SortingFn<Project>=(rowA,rowB)=>{
-    // Compare the project statuses for sorting
     const endDate=DateTime.fromISO(rowA.original.projectEndDate)
     const now=DateTime.now()
     if(endDate<now){

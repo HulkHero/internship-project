@@ -1,39 +1,23 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-
-import axios from 'axios';
+import React from 'react';
+import {  useForm } from 'react-hook-form';
+import  { AxiosError } from 'axios';
 import { useAppSelector } from '../../../../redux/hooks';
 import { authSelector } from '../../../../redux/slices/authSlice';
 import axiosInstance from '../../../../utils/interceptor';
-import Button from '../../../../components/Button';
 import {AiOutlineUserAdd} from "react-icons/ai"
 import CustomInput from '../../../../components/CustomInput';
 import { emailValidation, passwordValidation, textValidation } from '../../../../utils/InputValidations';
-import useFetch from '../../../../hooks/useFetch';
 import CustomButton from '../../../../components/CustomButton';
 import openModal from '../../../../utils/handleModal';
 import Modal from '../../../../components/Modal';
-import { useQuery } from '@tanstack/react-query';
-interface IAddMember{
-    firstName:string,
-    lastName:string,
-    email:string,
-    password:string,
-    companyName:string,
-    systemRole:string,
-    techRole:string[]
-}
-
-interface IRole{
-    roles:string[]
-}
-
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { MutationError } from '../../../../types';
+import { IAddMember } from './types';
 
 const AddMember = () => {
-     const {_id,token}=useAppSelector(authSelector)
+     const {_id,}=useAppSelector(authSelector)
      const [error,setError]=React.useState<string>("")
-     const [loading,setLoading]=React.useState<boolean>(false)
-    //  const [roles,setRoles]=React.useState<string[]>([])
+
  
      const {companyName} = JSON.parse(localStorage.getItem("user")||"")
     const form = useForm<IAddMember>({
@@ -49,39 +33,33 @@ const AddMember = () => {
         mode:"all"
     });
 
-    
+    const { register, handleSubmit, formState,reset } = form;
+    const { errors,isDirty,isValid ,isSubmitting} = formState;
 
-    const { register, handleSubmit, formState } = form;
-    const { errors,isDirty,isValid ,isSubmitting,isSubmitSuccessful} = formState;
-    useEffect(() => {
-        if (isSubmitSuccessful) {
-            form.reset();
-        }
-    }, [isSubmitSuccessful]);
-    const onSubmit =async (data: IAddMember) =>{
-      setLoading(true)
-      axios.post(`http://localhost:5000/user/addMember/${_id}`,data,{
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":`Bearer ${token}`
-        }
-      }).then((res)=>{
-        setLoading(false)
-         openModal("success")
 
-      }).catch((err)=>{
-        console.log(err)
-        setError(err.response.data.msg)
-        setLoading(false)
-      })
-    }
-    // const {data:roles,error:errorMessage,isLoading}=useFetch<string[]>({endPoint:"/kpi/get",params:`?companyName=${companyName}`})
+    const {mutate,isLoading:loadingMuation}=useMutation((data:IAddMember)=>axiosInstance.post(`user/addMember/${_id}`,data),
+        {
+            onSuccess:(data)=>{
+                openModal("success")
+                reset()
+            },
+            onError:(err:AxiosError<MutationError>)=>{
+                setError(err.response?.data.msg||"something went wrong")
+                openModal("error")
+            }
+        })
+        const onSubmit =async (data: IAddMember) =>{
+            mutate(data)
+        }
+
     const {data:roles,isLoading,isError}=useQuery(['getRoles'],()=>{
         return axiosInstance.get('/kpi/get')
     },{select:(data)=>data.data.roles})
+
     return (
         <div className=" flex  justify-center w-full">
             <Modal variant='success' title="Member Added" description="Member Added Successfully" />
+            <Modal variant='error' title={"Failed"} description={error}  ></Modal>
             <div className="bg-white p-4 rounded-md  w-full">
                 <div className="text-3xl font-bold text-center mb-4 ">AddMember</div>
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -95,7 +73,6 @@ const AddMember = () => {
                                 Role
                             </label>
                             <select
-                
                                 id="systemRole"
                                 {...register("systemRole",{
                                     required:"Role is required",
@@ -115,14 +92,12 @@ const AddMember = () => {
                             </label>
                             <select
                                 id="techRole"
-                                placeholder='Select Role'
+                                placeholder="Select Tech Role"
                                 {...register("techRole",{
-                                    required:"Company Name is required",
-                                    // validate:(value)=>value.trim().length>3}
-                                        
+                                    required:"tech Role is required",
                                 })}
                                 className="border rounded p-2 w-2/3"
-                            >
+                            >    
                                 {
                                    roles && roles.map((role:string,index:number)=>{
                                         return(
@@ -131,11 +106,13 @@ const AddMember = () => {
                                     })
                                 }
                                 </select>
+                                {isLoading && <p>Loading...</p>}
+                                {isError && <p className='text-red-500'>Error fetching Roles</p>}
                             <br></br>
-                            <p>{errors.techRole?.message}</p>
+                            <p className='text-red-500'>{errors.techRole?.message}</p>
                         </div>
-                        <div className="flex justify-center text-white">
-                            <CustomButton text="Add Member" type="submit" className='btn-primary btn-wide btn-sm' disabled={!isDirty|| !isValid } isLoading={isSubmitting } icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>}></CustomButton>
+                        <div className="flex justify-center text-white pb-10 ">
+                            <CustomButton text="Add Member" type="submit" className='btn-primary btn-wide btn-sm' disabled={!isDirty|| !isValid} isLoading={isSubmitting ||loadingMuation} icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>}></CustomButton>
                         </div>
                     </div>
                 </form>

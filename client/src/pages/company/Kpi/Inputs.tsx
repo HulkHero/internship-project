@@ -1,38 +1,20 @@
-import React,{memo} from 'react';
-import { FieldErrors, UseFormGetValues, UseFormRegister } from 'react-hook-form';
-import { textValidation,emailValidation,numberValidation } from '../../../utils/InputValidations';
-import TextInput from '../../../components/InputFields/TextInput';
-import Input2 from '../../../components/Input2';
-import NumberInput from '../../../components/InputFields/NumberInput';
+import { FieldErrors,UseFormRegister } from 'react-hook-form';
+import { textValidation,numberValidation } from '../../../utils/InputValidations';
 import CustomInput from '../../../components/CustomInput';
-
-interface Ikpi {
-    kpiName: string;
-    kpiWeight: number;
-    kpiThreshold: number;
-}
-
-interface IForm {
-    techRole: string;
-    kpis: Ikpi[];
-}
+import { IForm } from './types';
 
 type Props = {
     register: UseFormRegister<IForm>;
     remove: (index: number) => void;
     errors: FieldErrors<IForm>;
     index: number;
-    getValues: UseFormGetValues<IForm>;
     toggle: string;
     id: string;
 };
 
 const Inputs = (props: Props) => {
-    const { register:register1, remove, index, errors, id, toggle } = props;
-    const register=React.useCallback(
-       register1,
-      [])
-    
+    const { register, remove, index, errors, id, toggle } = props;
+  
     return (
         <div className={`${id === toggle ? '' : 'hidden'} m-5 p-5 border rounded-lg bg-gray-100`}>
          <CustomInput<IForm> title={"Kpi Name"} type={"text"} rules={textValidation("Kpi Name")} name={`kpis.${index}.kpiName`} placeholder={"Enter Kpi Name"} errors={errors?.kpis?.[index]?.kpiName} register={register}/>

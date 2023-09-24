@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Route, createSearchParams } from "react-router-dom";
+import { Link,} from "react-router-dom";
 
 const Breadcrumbs = ({ route }:{route:string}) => {
   
@@ -8,9 +8,7 @@ const Breadcrumbs = ({ route }:{route:string}) => {
 
    const breadcrumbs = pathSegments.map((segment, index) => {
     if (segment === "company" && index === 0) {
-      // Skip creating a breadcrumb for the "company" segment when it's the first segment
       if (pathSegments.length === 1) {
-
         return {
             label: "Dashboard",
             href: "/company/",
@@ -22,7 +20,6 @@ const Breadcrumbs = ({ route }:{route:string}) => {
       return{
         label:"Detail",
         href:`/${pathSegments.slice(0, index + 1).join("/")}`,
-      
       }
     }
 

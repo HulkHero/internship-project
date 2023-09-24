@@ -4,32 +4,9 @@ import { usePaginatedProjects } from '../../../../ReactKueries/PaginatedProjects
 import CustomButton from '../../../../components/CustomButton'
 import DataGrid from '../../../../components/DataGrid'
 import { dataColumns } from './DataColumns'
-import SearchFilter from './SearchFilter'
 import { AxiosError } from 'axios'
-
-export interface Project {
-    _id: string,
-    projectName: string,
-    teamName: string,
-    projectManager: {
-      _id: string,
-      firstName: string,
-      lastName: string,
-    },
-    projectStatus: string,
-    projectDescription: string,
-    projectStartDate: string,
-    projectEndDate: string,
-    projectMembers:string[]
-  }
-interface BackendData{
-    data:Project[],
-    hasMore:boolean
-    total:number
-    page?:number
-}
-
-
+import { BackendData } from './types'
+import SearchFilter from '../../../../components/SearchFilter'
 
 const Project = () => {
     const [page, setPage] = React.useState(0)
@@ -43,19 +20,16 @@ const Project = () => {
         setSearch(searchInputValue)
         setFilter(selectValue)
         setPage(0)
-        refetch()
-      //
     }
     
     const {data,isLoading,error,isError,isPreviousData,refetch}=usePaginatedProjects<BackendData>({page,searchInputValue,selectValue})
     React.useEffect(() => {
-      // Automatically trigger data fetch when page, search input, or filter changes
       refetch();
-  }, [page, searchInputValue, selectValue]);
+  }, [searchInputValue, selectValue]);
   return (
     <div className='bg-white'>
         <div>
-           <SearchFilter  handleSearch={handleSearch}/>
+           <SearchFilter title={"Projects"} handleSearch={handleSearch} select={true} />
         </div>
         <div className='w-fit ml-auto my-2'>
             <Link to="/company/evaluation/addProject" className='btn btn-outline btn-primary btn-sm'>Add Project</Link>
@@ -86,11 +60,9 @@ const Project = () => {
             className='btn btn-primary btn-sm '
         onClick={() => {
           if (!isPreviousData && data?.hasMore) {
-            // createSearchParams({ page: String(page + 1)})
             setPage(old => old + 1)
           }
         }}
-        
         disabled={isPreviousData || !data?.hasMore}
       />
     </div>

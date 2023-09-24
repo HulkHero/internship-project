@@ -2,42 +2,10 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { usePaginatedUsers } from '../../../ReactKueries/PaginatedUsers'
 import  CustomButton  from '../../../components/CustomButton'
-
 import DataGrid from '../../../components/DataGrid'
-import { createColumnHelper } from '@tanstack/react-table'
-import Search from './Search'
-export interface User{
-    firstName:string,
-    lastName:string,
-    systemRole:string,
-    techRole:string,
-    _id:string,
-    email:string,
-}
-const columnHelper = createColumnHelper<User>()
-const dataColumns = [
-
-    {
-      header: 'FirstName',
-      accessorKey: 'firstName',
-    },
-    {
-      header: 'LastName',
-      accessorKey: 'lastName',
-    },
-    {
-      header: 'SystemRole',
-      accessorKey: 'systemRole', 
-    },
-    {
-        header: 'TechRole',
-        accessorKey: 'techRole',
-    },
-    {
-        header: 'Email',
-        accessorKey: 'email',
-    }
-  ]
+import { dataColumns } from './dataColumns'
+import { User } from './types'
+import SearchFilter from '../../../components/SearchFilter'
 const Member = () => {
     const [page, setPage] = React.useState(0)
     const [searche,setSearche]=React.useState('')
@@ -57,20 +25,19 @@ const Member = () => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget);
     let searchInputValue= formData.get("searchinput") as string;
-    console.log(searchInputValue)
     setSearche(searchInputValue)
     setPage(0)
   
    }
    React.useEffect(() => {
     refetch();
-}, [page,searche]);
+}, [searche]);
  
 
 
   return (
     <div className='bg-white'>
-       <Search isLoading={isLoading} handleSearch={handleSearch}/>
+       <SearchFilter title='Members' select={false}  handleSearch={handleSearch}/>
         <div >
             <div className='ml-auto w-fit m-2  '>
                 <Link to="/company/member/addMember" className='btn btn-secondary btn-sm btn-outline'>Add Member</Link>
@@ -81,9 +48,9 @@ const Member = () => {
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
-  <div>Error: {error instanceof Error ? error.message : 'An error occurred'}</div>
+  <div>Error: {error instanceof Error ? error.message : 'Something went wrong'}</div>
 ) : (
-    <DataGrid data={data.data} columns={dataColumns}></DataGrid>
+    <DataGrid<User> data={data.data} columns={dataColumns}></DataGrid>
 )}
       </div>
       
@@ -105,7 +72,6 @@ const Member = () => {
             setPage(old => old + 1)
           }
         }}
-        
         disabled={isPreviousData || !data?.hasMore}
       />
     </div>
