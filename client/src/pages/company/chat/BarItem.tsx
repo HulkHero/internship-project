@@ -1,5 +1,5 @@
 import React from 'react'
-import { IChat } from './Chat';
+import { IChat } from './types';
 interface Props{
     chat:IChat,
     currentUser:string

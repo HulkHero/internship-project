@@ -1,10 +1,10 @@
 import React from 'react'
 import BarItem from './BarItem'
 import {User} from '../../../types'
-import { IChat, userId } from './Chat'
-import { member } from './Chat'
+import { IChat, userId } from './types'
+import { member } from './types'
 import axiosInstance from '../../../utils/interceptor'
-import { useQueryClient, } from "@tanstack/react-query"
+import { isError, useQueryClient, } from "@tanstack/react-query"
 import SmallCard from '../../../components/smallCard'
 
 interface Props{

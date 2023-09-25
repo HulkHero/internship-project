@@ -47,7 +47,7 @@ const userSchema = Schema({
         type: String,
     },
     Projects: [{ type: Schema.Types.ObjectId, ref: 'Projects' }],
-    Tasks: [{ type: Schema.Types.ObjectId, ref: 'Tasks' }],
+
 
 });
 

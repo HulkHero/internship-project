@@ -16,9 +16,12 @@ const addProject = async (req, res) => {
             return {
                 member: mem,
                 isEvaluated: false
-
             }
         });
+        const alreadyPresent = await Project.findOne({ projectName: projectName, companyName: companyName });
+        if (alreadyPresent) {
+            return res.status(400).json({ msg: "Project already present with this name" });
+        }
         const newProject = new Project({
             projectName,
             projectDescription,

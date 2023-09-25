@@ -8,6 +8,10 @@ import { useAppSelector } from '../../redux/hooks'
 import { authSelector } from '../../redux/slices/authSlice'
 import Modal from '../Modal'
 import openModal from '../../utils/handleModal'
+import { toast } from 'react-toastify'
+import CustomButton from '../CustomButton'
+import { AxiosError } from 'axios'
+
 
 interface Props {
     projectId?:string,
@@ -20,24 +24,24 @@ interface Props {
 const EvaluateCard = ({projectId,techRole,employeeId,type}: Props) => {
     const managerId=useAppSelector(authSelector)._id
     const [index,setIndex]=useState(0)
-    const [kpis,setKpis]=useState<Kpi[]>([])
+    const [score,setScore]=useState<number[]>([])
     const [disable,setDisable]=useState(true)
     console.log(employeeId,"employeeId")
 
-  const {data,isLoading,error,isError ,refetch}=useQuery(["kpis",employeeId],()=>{
+  const {data:kpis,isLoading,error,isError}=useQuery(["kpis",employeeId],()=>{
     return axiosInstance.get(`/kpi/getKpi/${techRole}`)
   },{select:(data)=>data.data.data.kpiFields,
     enabled:!!employeeId,
-    refetchInterval:1000*60*60*24,
   })
 
-  const {data:mutation,mutate ,isLoading:mutationLoading,error:mutationError,isError:mutationIsError}=useMutation({
+  const {mutate ,isLoading:mutationLoading,}=useMutation({
      mutationFn: ()=>{
       return axiosInstance.post(`/evaluation/add`,{
         employeeId,
         managerId,
         projectId,
         kpis,
+        score:score,
         type:type
       })
     },
@@ -48,56 +52,39 @@ const EvaluateCard = ({projectId,techRole,employeeId,type}: Props) => {
     openModal('error')
   }}
   )
-   
-  useEffect(()=>{
-    if(data){
-      console.log("newData")
-       setKpis(data)
-    }
-  },[data])
 
   const handleOptionChange = (selectedValue:string) => {
-    console.log('Selected option:', selectedValue);
-    kpis[index].kpiScore=Number(selectedValue)
+    setScore([...score,Number(selectedValue)])
     setDisable(false)
   };
-
-  console.log(kpis,"kpis")
-  useEffect(()=>{
-    if(kpis.length>0){
-      setDisable(true)
-    }
-  },[index])
-
   const handleNext=()=>{
      if(index<kpis.length-1){
-       if(kpis[index].kpiScore===undefined){
-          alert("please select an option")
+       if(score[index]===undefined){
+         toast.info("please select an option")
          return;
        }
        setIndex(index+1)
+       setDisable(true)
      }
      else{
         mutate()
-        // handleSubmit();
      }
   }
-
-
   return (
-    <div className='w-full rounded-md md:w-[80%]  mx-auto '>
-    {kpis && kpis.length>0 ?<div className=' bg-white rounded-md text-gray-900  h-screen  sm:min-h-[80%] flex flex-col justify-between sm:justify-start sm:h-fit '>
+    <div className='w-full rounded-md md:w-[80%] shadow-md  mx-auto '>
+     {isLoading ?<div className=' w-full h-[80vh] flex items-center justify-center'><span className='loading loading-dots w-[100px]' ></span></div>:
+     isError?<div className='w-full flex items-center justify-center'>Error: {error instanceof AxiosError? error?.response?.data.msg:"something went wrong"}</div>:null}
+    {kpis && kpis.length>0 ?<div className=' bg-white rounded-md text-gray-900  sm:min-h-[80%] flex flex-col justify-between sm:justify-start sm:h-fit '>
     <div>
-    <div className='bg-secondary p-3 shadow-md '>
-      <h1 className='text-center text-white text-xl'>Project Base Evaluation</h1>
+    <div className='bg-brightRed p-3 shadow-md '>
+      <h1 className='text-center text-white text-xl'>{type==="project"?"Project Base Evaluation":"Time Base Evaluation"}</h1>
     </div>
-    {/* <TimerProgressbar time={time} initialTime={initialTime}></TimerProgressbar> */}
     <div>
       <div className='bg-white px-3 py-4 border-b-2'>
         <p className='flex flex-col'>
-          <span >  {kpis[index].kpiName}</span>
+          <span className=' text-lg'>  {kpis[index].kpiName}</span>
           
-          <span className='text-sm text-gray-500'>
+          <span className='text-md text-gray-500'>
             Weightage:{"  "}{kpis[index].kpiWeight}
           </span>
         </p>
@@ -110,8 +97,8 @@ const EvaluateCard = ({projectId,techRole,employeeId,type}: Props) => {
     <div>
     <ProgressBar index={index} length={kpis.length}></ProgressBar>
     <div className='w-full'>
-      <div className='w-fit ml-auto'>
-        <button  disabled={disable} onClick={()=>handleNext()} className='btn btn-primary disabled:bg-red-300 '>{kpis.length-1===index ?"Submit":"Next"}</button>
+      <div className='w-fit pt-0 p-4  ml-auto'>
+        <CustomButton type={"button"} text={kpis.length-1===index ?"Submit":"Next"} disabled={disable} isLoading={mutationLoading} onClick={()=>handleNext()} className=' btn-primary'></CustomButton>
       </div>
     </div>
    </div> 

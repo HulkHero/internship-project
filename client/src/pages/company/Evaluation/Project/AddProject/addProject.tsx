@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import CustomInput from '../../../../../components/CustomInput';
 import { textLongValidation, textValidation } from '../../../../../utils/InputValidations';
-import  { ActionMeta, GroupBase, } from 'react-select';
+import  { ActionMeta, GroupBase } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import axiosInstance from '../../../../../utils/interceptor';
 import { toast,ToastContainer } from 'react-toastify';
@@ -13,7 +13,6 @@ import { MutationError } from '../../../../../types';
 import { IAddProject,IOption,CustomOptionProps } from './types';
 import { fetchOptions } from '../../../../../utils/fetchOptionsDebounce';
 
-
 const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>>> = (props) => {
   return (
     <div className='flex flex-col bg-neutral-100 focus:bg-red-300 active:bg-red-400 cursor-pointer hover:bg-red-300 ' {...props.innerProps}>
@@ -22,7 +21,6 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
     </div>
   );
 };
-
 
 const AddProject: React.FC = () => {
 
@@ -40,23 +38,10 @@ const AddProject: React.FC = () => {
   }); 
 
   const { register, handleSubmit, formState, getValues ,reset,setError} = form;
-  const { errors,isSubmitSuccessful, } = formState;
+  const { errors, } = formState;
 
-  useEffect(() => {
-    if (isSubmitSuccessful===true) {
-      reset({
-        projectName: "",
-        projectDescription: "",
-        teamName: "",
-        projectMembers: [""],
-        projectStartDate: new Date(),
-        projectEndDate: new Date(),
-      });
-    }
-  }, [isSubmitSuccessful]);
 
   const onSubmit = async (data: IAddProject) => {
-
     if(options.length<2)
     {
      setError("projectMembers",{message:"Please select atleast two member"})
@@ -73,15 +58,17 @@ const AddProject: React.FC = () => {
   const {mutate,isLoading,} = useMutation((data:IAddProject)=>axiosInstance.post('/project/add',data),{
     onSuccess:()=>{
       toast.success("Project Added Successfully");
+      reset({
+        projectName: "",
+        projectDescription: "",
+        teamName: "",
+        projectMembers: [""],
+        projectStartDate: new Date(),
+        projectEndDate: new Date(),
+      });
     },
     onError:(err:AxiosError<MutationError>)=>{
-      if(err.response?.status===400){
-        toast.error("Something went wrong");
-      }
-      else{
-        toast.error(err.response?.data.msg);
-      }
-     
+        toast.error(err.response?.data.msg||"Something went wrong");
     }
   });
 

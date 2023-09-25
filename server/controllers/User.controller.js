@@ -341,6 +341,23 @@ const logout = async (req, res) => {
     }
 }
 
+const changeSystemRole = async (req, res) => {
+    try {
+        const { _id, systemRole } = req.body;
+        const result = await User.findOneAndUpdate({ _id }, { $set: { systemRole } }).exec();
+        if (result) {
+            return res.status(200).json({ msg: "System role changed successfully" })
+        }
+        else {
+            return res.status(400).json({ msg: "Failed to change system role" })
+        }
+
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({ msg: "Failed to change system role" })
+    }
+}
+
 module.exports = {
     addUser,
     userLogin,
@@ -349,5 +366,6 @@ module.exports = {
     searchUser,
     getAllUsers,
     logout,
-    getPaginatedUsers
+    getPaginatedUsers,
+    changeSystemRole,
 }

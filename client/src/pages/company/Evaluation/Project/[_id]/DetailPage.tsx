@@ -3,30 +3,8 @@ import React, { useEffect } from 'react'
 import {useParams,useSearchParams} from "react-router-dom"
 import axiosInstance from '../../../../../utils/interceptor'
 import MemberCard from './MemberCard'
+import { ProjectMember } from './types'
 
-export interface ProjectDetail{
-  _id:string,
-  projectName:string,
-  projectDescription:string,
-  projectEndDate:Date,
-  projectStartDate:Date,
-  projectManager:Member[],
-  members:{}[]
-
-}
-
-export interface ProjectMember{
-   member:Member,
-   isEvaluated:boolean,
-   evaluation:string|null
-}
-export interface Member{
-  _id:string,
-  firstName:string,
-  lastName:string,
-  techRole:string,
-  systemRole:string
-}
 
 const DetailPage = () => {
   const params=useParams()._id
@@ -41,28 +19,29 @@ const DetailPage = () => {
   if(data){
     const projectEndDate = new Date(data.projectEndDate);
   if(projectEndDate<new Date()){
-    console.log("project ended")
     setInProgress(false);
   }}
   },[data])
 
   return (
-    <div>
+    <div >
       {
         isLoading?(
-          <span className='loading loading-dots'>Loading</span>
+          <div className=' w-full h-[80vh] flex items-center justify-center'>
+          <span className='loading loading-dots w-[100px]'></span>
+          </div>
         ):isError?(
-          <div>Error</div>
+          <div className='w-full flex items-center justify-center'>Error: {error instanceof Error? error.message:"something went wrong"}</div>
         ):(
            null
         )
       }
       {
        data &&<div>
-        <div>
+        <div className='py-4 text-center font-bold text-3xl '>
           {data.projectName}
         </div>
-        <div>
+        <div className='text-center pb-2 '>
           {data.projectDescription}
           </div>
           {

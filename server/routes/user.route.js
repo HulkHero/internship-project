@@ -20,12 +20,10 @@ router.get('/search/:searche', authentication, User.searchUser);
 
 router.get("/checkEmail/:email", User.checkEmail);
 
-
-
 router.post('/logout', authentication, User.logout);
 
 router.get('/hello', authentication, authorization.adminAuthz, (req, res) => {
     res.status(200).json({ msg: "hello" })
 });
-
+router.put("/changeSystemRole", authentication, authorization.adminAuthz, User.changeSystemRole);
 module.exports = { userRouter: router }

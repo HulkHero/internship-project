@@ -21,7 +21,6 @@ export  const dataColumns = [
       cell:(props:CellContext<Project,unknown>)=>(
         <Link to={`/company/evaluation/${props.row.original._id}`}>{props.row.original.projectName}</Link>
       ),
-      enablePinning:true,
   },
       {
       header: 'Team',

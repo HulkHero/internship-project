@@ -9,6 +9,7 @@ import TopPerformer from './TopPerformer'
 import { AxiosError } from 'axios'
 import SearchBar from './SearchBar'
 import Bar from './Managers/Bar'
+import Skeleton from '../../../components/Skeleton'
 
 
 
@@ -54,7 +55,9 @@ const Dashboard = () => {
         {data && searche!=="" && <TopPerformer topPerfomer={false} firstName={data.firstName} lastName={data.lastName} techRole={data.techRole} systemRole={data.systemRole} averageScore={data.averageScore} ></TopPerformer>}
       </div>
       <div>
-        {isLoading?<div>Loading...</div>
+        {isLoading?<><Skeleton variant="box"></Skeleton>
+        <Skeleton variant="4charts"></Skeleton>
+                      </>
         :isError?  (
           <div>Error: {error instanceof AxiosError? error.response?.data.msg :"Something Went Wrong"}</div>
         ) 

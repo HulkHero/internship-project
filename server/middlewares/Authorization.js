@@ -1,6 +1,4 @@
 
-const Manager = require("../models/Manager.model");
-const Employee = require("../models/Employee.model")
 const adminAuthz = async (req, res, next) => {
 
     try {
@@ -50,7 +48,6 @@ const AdminOrManager = async (req, res, next) => {
         return res.status(401).send({ error: "Authoization error" })
     }
 }
-
 
 
 module.exports = {

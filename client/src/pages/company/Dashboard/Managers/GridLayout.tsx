@@ -9,6 +9,8 @@ import axiosInstance from "../../../../utils/interceptor";
 import DoghnutChart from "./DoghnutChart";
 import PieChart from "./PieChart";
 import PolarAreaChart from "./PolarAreaChart";
+import Skeleton from "../../../../components/Skeleton";
+import { AxiosError } from "axios";
 
 
 interface Props {
@@ -41,7 +43,7 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 const GridLayout = ({evaluation}:Props) => {
 
    
-const {data:managerData,isLoading:managerLoading}=useQuery(['getManagers'],()=>{
+const {data:managerData,isLoading:managerLoading,isError:MisError,error:Merror}=useQuery(['getManagers'],()=>{
     return axiosInstance.get('/dashboard/managers')
 },{
     select:(data)=>data.data.data
@@ -69,14 +71,20 @@ const {data:managerData,isLoading:managerLoading}=useQuery(['getManagers'],()=>{
       }}
       rowHeight={350}
     >
-      <div className="bg-white flex justify-center" key="1">
+      <div className="bg-white" key="1">
+      {MisError?<div>Error: {Merror instanceof AxiosError ? Merror.response?.data.msg :"Something Went Wrong"}</div>:null}
+        {managerLoading?<Skeleton variant='chart'></Skeleton>:null}
         {managerData && <DoghnutChart data={managerData}></DoghnutChart>}
       </div>
 
       <div className="bg-white" key="2">
+      {isError?<div>Error: {error instanceof AxiosError ? error.response?.data.msg :"Something Went Wrong"}</div>:null}
+        {isLoading?<Skeleton variant='chart'></Skeleton>:null}
         {projectData &&  <PieChart data={projectData}></PieChart>}
       </div>
       <div className="bg-white" key="3">
+        {isError?<div>Error: {error instanceof AxiosError ? error.response?.data.msg :"Something Went Wrong"}</div>:null}
+        {isLoading?<Skeleton variant='chart'></Skeleton>:null}
         {projectData &&  <PolarAreaChart data={projectData}></PolarAreaChart>}
       </div>
     </ResponsiveGridLayout>

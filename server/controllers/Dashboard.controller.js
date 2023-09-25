@@ -196,7 +196,7 @@ const charts = async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ msg: "failed", err: err.message });
+        return res.status(400).json({ msg: "failed", err: "Something Went Wrong" });
     }
 };
 
@@ -248,7 +248,7 @@ const managersChart = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ msg: "failed", err: err.message });
+        return res.status(400).json({ msg: "failed", err: "Something Went Wrong" });
     }
 
 }
@@ -297,7 +297,7 @@ const projectsTime = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ msg: "failed", err: err.message });
+        return res.status(400).json({ msg: "failed", err: "Something Went Wrong" });
     }
 
 }

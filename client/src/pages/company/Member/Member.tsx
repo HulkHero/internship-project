@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { usePaginatedUsers } from '../../../ReactKueries/PaginatedUsers'
 import  CustomButton  from '../../../components/CustomButton'
 import DataGrid from '../../../components/DataGrid'
-import { dataColumns } from './dataColumns'
+import useColumns  from './dataColumns'
 import { User } from './types'
 import SearchFilter from '../../../components/SearchFilter'
 const Member = () => {
-    const [page, setPage] = React.useState(0)
+    const [page, setPage] = React.useState<number>(0)
     const [searche,setSearche]=React.useState('')
+
+    const dataColumns=useColumns({page})
+
 
      console.log(page)
     const {
@@ -32,7 +35,7 @@ const Member = () => {
    React.useEffect(() => {
     refetch();
 }, [searche]);
- 
+
 
 
   return (
@@ -54,7 +57,7 @@ const Member = () => {
 )}
       </div>
       
-      <div className='flex-grow-0 flex justify-center'>
+      <div className='flex-grow-0 flex justify-center my-5'>
 
       <CustomButton
         text={"<"}

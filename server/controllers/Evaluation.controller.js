@@ -6,19 +6,25 @@ const Project = require('../models/Project.model');
 
 const addEvaluation = async (req, res) => {
     try {
-        const { employeeId, managerId, projectId, type, kpis, } = req.body;
+        const { employeeId, managerId, projectId, type, kpis, score } = req.body;
         const companyName = req.companyName;
-        console.log(req.body, "req.body")
 
-        const score = kpis.reduce((acc, curr) => acc + (curr.kpiScore * (curr.kpiWeight * 0.1)), 0)
-        const threshold = kpis.reduce((acc, curr) => acc + (curr.kpiThreshold * (curr.kpiWeight * 0.1)), 0)
+        const newkpis = kpis.map((kpi, index) => {
+            return {
+                ...kpi,
+                kpiScore: score[index]
+            }
+        })
+
+        const AverageScore = newkpis.reduce((acc, curr) => acc + (curr.kpiScore * (curr.kpiWeight * 0.1)), 0)
+        const threshold = newkpis.reduce((acc, curr) => acc + (curr.kpiThreshold * (curr.kpiWeight * 0.1)), 0)
         const newEvaluation = new Evaluation({
             user_id: employeeId,
             manager_id: managerId,
             project_id: projectId,
             type,
-            kpis,
-            score,
+            kpis: newkpis,
+            score: AverageScore,
             threshold,
             companyName
         })
@@ -34,7 +40,7 @@ const addEvaluation = async (req, res) => {
         }
 
     } catch (err) {
-        return res.status(400).json({ msg: "Failed", err: err });
+        return res.status(400).json({ msg: "Failed", err: err.message });
     }
 
 
