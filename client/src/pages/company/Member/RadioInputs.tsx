@@ -39,13 +39,13 @@ const RadioInputs = ({systemRole,cellId,_id,page}: Props) => {
     </div>
     <div className="">
       <label className="label flex-col cursor-pointer">
-        <input type="radio" name={cellId} value={"manager"} disabled={userSystemRole!=="admin"} onChange={handleChange} className="radio no-animation radio-sm checked:bg-blue-500 disabled:opacity-50" checked={selectedOption==="manager"} />
+        <input type="radio" name={cellId} value={"manager"} disabled={userSystemRole!=="admin"||systemRole==="admin"} onChange={handleChange} className="radio no-animation radio-sm checked:bg-blue-500 disabled:opacity-50" checked={selectedOption==="manager"} />
         <span className="label-text">Manager</span> 
       </label>
     </div>
     <div className="">
       <label className="label flex-col cursor-pointer">
-        <input type="radio" name={cellId} value={"employee"} disabled={userSystemRole!=="admin"} onChange={handleChange} className="radio radio-sm no-animation checked:bg-green-500 disabled:opacity-50" checked={selectedOption==="employee"} />
+        <input type="radio" name={cellId} value={"employee"} disabled={userSystemRole!=="admin"||systemRole==="admin"} onChange={handleChange} className="radio radio-sm no-animation checked:bg-green-500 disabled:opacity-50" checked={selectedOption==="employee"} />
         <span className="label-text">Employee</span> 
       </label>
     </div>

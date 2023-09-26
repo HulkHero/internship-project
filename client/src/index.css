@@ -34,3 +34,8 @@ body {
   @apply bg-blue-300 text-white text-opacity-60 
 
 }
+
+.Toastify__toast--error {
+  background: #F50000 !important;
+
+}

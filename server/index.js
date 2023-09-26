@@ -19,7 +19,7 @@ const io = require("socket.io")(8800, {
 const app = express();
 
 
-mongoose.connect(process.env.MONGODB_URL);
+mongoose.connect(process.env.MONGODB_URL).then(() => { console.log("connected") }).catch(() => { console.log("err") });
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
@@ -87,52 +87,10 @@ io.on("connection", (socket) => {
     });
 });
 
-// const activeUsers = new Map();
-
-// io.on("connection", (socket) => {
-//     // Add new user
-//     socket.on("new-user-add", (newUserId) => {
-//         // Check if user is not added previously
-//         if (!activeUsers.has(socket.id)) {
-//             activeUsers.set(socket.id, { userId: newUserId });
-//             console.log("New User Connected", activeUsers);
-//         }
-//         // Send all active users to the new user
-//         console.log("get-users", Array.from(activeUsers.values()))
-//         io.emit("get-users", Array.from(activeUsers.values()));
-//     });
-
-//     socket.on("disconnect", () => {
-//         // Remove user from active users
-//         if (activeUsers.has(socket.id)) {
-//             activeUsers.delete(socket.id);
-//             console.log("User Disconnected", activeUsers);
-//             // Send all active users to all users
-//             io.emit("get-users", Array.from(activeUsers.values()));
-//         }
-//     });
-
-//     // Send a message to a specific user
-//     socket.on("send-message", (data) => {
-//         const { receiverId } = data;
-//         console.log(data, "data")
-//         for (const [socketId, user] of activeUsers.entries()) {
-//             if (user.userId === receiverId) {
-//                 io.to(socketId).emit("receive-message", data);
-//                 break; // Stop searching once the user is found and the message is sent
-//             }
-//         }
-//     });
-// });
 
 cron.schedule('0 8 15,30 * *', () => {
     console.log('running a task  ');
 });
-
-cron.schedule('* * * * *', () => {
-    console.log('running a task every 1 minute');
-    io.emit("notification", "its time for evaluation")
-})
 
 
 app.use(express.static('public'));

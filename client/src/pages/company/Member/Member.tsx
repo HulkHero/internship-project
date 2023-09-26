@@ -6,11 +6,15 @@ import DataGrid from '../../../components/DataGrid'
 import useColumns  from './dataColumns'
 import { User } from './types'
 import SearchFilter from '../../../components/SearchFilter'
+import { AxiosError } from 'axios'
+import Modal from './Modal'
 const Member = () => {
     const [page, setPage] = React.useState<number>(0)
     const [searche,setSearche]=React.useState('')
 
-    const dataColumns=useColumns({page})
+    const {dataColumns,user,open,setOpen}=useColumns({page})
+
+    console.log(user,open,"hook")
 
 
      console.log(page)
@@ -51,11 +55,15 @@ const Member = () => {
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
-  <div>Error: {error instanceof Error ? error.message : 'Something went wrong'}</div>
+  <div>Error: {error instanceof AxiosError? error.response?.data.msg ? error.response.data.msg:error.message  :"something went wrong" }</div>
 ) : (
     <DataGrid<User> data={data.data} columns={dataColumns}></DataGrid>
 )}
       </div>
+      {
+        open===true && user ?<Modal user={user} open={open} setOpen={setOpen} page={page}></Modal>:null
+      }
+
       
       <div className='flex-grow-0 flex justify-center my-5'>
 

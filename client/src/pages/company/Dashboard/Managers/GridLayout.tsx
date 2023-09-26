@@ -11,6 +11,7 @@ import PieChart from "./PieChart";
 import PolarAreaChart from "./PolarAreaChart";
 import Skeleton from "../../../../components/Skeleton";
 import { AxiosError } from "axios";
+import { MutationError } from "../../../../types";
 
 
 interface Props {
@@ -56,36 +57,29 @@ const {data:managerData,isLoading:managerLoading,isError:MisError,error:Merror}=
     select:(data)=>data.data.data
 })
 
-
-
- 
   return (
     <ResponsiveGridLayout
-      className="layout bg-neutral-100 gap-10"
+      className="layout bg-neutral-100 mx-2 mb-3"
       layouts={layouts}
       breakpoints={{ lg: 1200, md: 700, sm: 400, xs: 300, xxs: 0 }}
       cols={{ lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 }}
-      onBreakpointChange={(newBreakpoint:string,newCols:number)=>{
-        console.log(newBreakpoint,newCols)
-        console.log("breakpoint changed")
-      }}
       rowHeight={350}
     >
       <div className="bg-white" key="1">
-      {MisError?<div>Error: {Merror instanceof AxiosError ? Merror.response?.data.msg :"Something Went Wrong"}</div>:null}
-        {managerLoading?<Skeleton variant='chart'></Skeleton>:null}
-        {managerData && <DoghnutChart data={managerData}></DoghnutChart>}
+        {managerLoading?<Skeleton variant='chart'></Skeleton>:
+        MisError?<div>Error: {Merror instanceof AxiosError? Merror.response?.data.msg ? Merror.response.data.msg:Merror.message  :"something went wrong" }</div>:
+        managerData && <DoghnutChart data={managerData}></DoghnutChart>}
       </div>
 
       <div className="bg-white" key="2">
-      {isError?<div>Error: {error instanceof AxiosError ? error.response?.data.msg :"Something Went Wrong"}</div>:null}
-        {isLoading?<Skeleton variant='chart'></Skeleton>:null}
-        {projectData &&  <PieChart data={projectData}></PieChart>}
+        {isLoading?<Skeleton variant='chart'></Skeleton>:
+        isError?<div>Error: {error instanceof AxiosError? error.response?.data.msg ? error.response.data.msg:error.message  :"something went wrong" }</div>:
+        projectData &&  <PieChart data={projectData}></PieChart>}
       </div>
       <div className="bg-white" key="3">
-        {isError?<div>Error: {error instanceof AxiosError ? error.response?.data.msg :"Something Went Wrong"}</div>:null}
-        {isLoading?<Skeleton variant='chart'></Skeleton>:null}
-        {projectData &&  <PolarAreaChart data={projectData}></PolarAreaChart>}
+      {isLoading?<Skeleton variant='chart'></Skeleton>:
+        isError?<div>Error: {error instanceof AxiosError? error.response?.data.msg ? error.response.data.msg:error.message  :"something went wrong" }</div>:
+        projectData &&  <PolarAreaChart data={projectData}></PolarAreaChart>}
       </div>
     </ResponsiveGridLayout>
   );

@@ -1,15 +1,13 @@
 import axios from 'axios';
-import { callback } from 'chart.js/dist/helpers/helpers.core';
-import debounce from 'lodash.debounce';
 export const textValidation =(name:string)=> {
    return{
 
          required: `${name} is required`,
             validate:{
                 maxLength: (value:string)=> {
-                    if(value.trim().length > 50)
+                    if(value.trim().length > 20)
                     {
-                     return (`${name} must be less than 50 characters` )} 
+                     return (`${name} must be less than 20 characters` )} 
                 },
                 minLength: (value:string)=> {
                     if(value.trim().length < 2)
@@ -96,5 +94,34 @@ export const numberValidation =(min:number,max:number)=> {
             required: `required`,
             min: { value: min, message: `Number must be more than ${min}` },
             max: { value: max, message: `Number must be less than ${max}` },
+    }
+}
+
+export const emailSimple=()=>{
+    return{
+        required: `Email is required`,
+            pattern:{
+            //eslint-disable-next-line
+            value:  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            message: "Invalid Email",
+            },
+    }
+}
+
+export const companyNameValidation=(name:string)=>{
+    return{
+        required: `${name} is required`,
+            validate:{
+                maxLength: (value:string)=> {
+                    if(value.trim().length > 10)
+                    {
+                     return (`${name} must be less than 10 characters` )} 
+                },
+                minLength: (value:string)=> {
+                    if(value.trim().length < 2)
+                    {
+                     return (`${name} must be more than 3 characters` )} 
+                }
+            }
     }
 }

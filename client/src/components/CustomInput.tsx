@@ -17,7 +17,7 @@ const CustomInput =<T extends {}> (props:Props<T>) => {
     <label className="block font-bold">{title}:</label>
     <input
         type={type}
-        className="w-full border rounded-md p-2 focus:outline-none focus:ring focus:border-blue-500"
+        className="w-full border rounded-md text-black mt-1 p-2 focus:outline-none focus:ring focus:border-blue-500"
         placeholder={placeholder}
          {...register(`${name}` as Path<T>,rules)}
     />

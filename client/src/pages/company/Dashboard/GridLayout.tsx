@@ -52,7 +52,7 @@ const GridLayout = ({evaluation}:Props) => {
  
   return (
     <ResponsiveGridLayout
-      className="layout bg-neutral-100 gap-10"
+      className="layout bg-neutral-100 mb-3 mx-2"
       layouts={layouts}
       breakpoints={{ lg: 1200, md: 700, sm: 400, xs: 300, xxs: 0 }}
       cols={{ lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 }}

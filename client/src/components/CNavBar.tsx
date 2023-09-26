@@ -15,7 +15,7 @@ interface Props{
 const CNavBar = ({toggleSideNav}:Props) => {
 
     const data=useAppSelector(authSelector)
-    const socket=useSocket()
+    const {socket}=useSocket()
     const [route, setRoute] = React.useState<string>("");
     const [notification,setNotification]=React.useState<string[]>([])
     const [showSidebar,setShowSidebar]=React.useState<boolean>(false);
@@ -53,8 +53,8 @@ const CNavBar = ({toggleSideNav}:Props) => {
   return (
     <div className='w-full'>
         <div  className='relative max-h-[9vh] bg-dark text-white text-center  w-full flex justify-center  items-center p-3'>
-              <div className='sm:hidden w-fit align-middle mb-2 '>
-              <label className="btn btn-ghost btn-xs btn-circle swap swap-rotate">
+              <div className='sm:hidden w-fit align-middle '>
+              <label className="btn btn-ghost btn-xs btn-circle self-center swap swap-rotate">
                 <input  onClick={()=>toggleSideNav()} type="checkbox" />
                 <svg className="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/></svg>
                 <svg className="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/></svg>
@@ -62,10 +62,10 @@ const CNavBar = ({toggleSideNav}:Props) => {
               </label>
               </div>
               <div className='w-full flex justify-between  items-center'>
-               <div className='flex flex-row'>{
-                    data && <div className='text-2xl  italic text-brightRed text-center  max-sm:px-2 sm:px-6 font-bold'>{data.companyName}</div>
+               <div className='flex flex-row '>{
+                    data && <div className='text-2xl  italic text-brightRed text-center align-middle max-[500px]:hidden  self-center max-sm:px-2 sm:px-6 font-bold'>{data.companyName}</div>
                 }
-               <div>
+               <div className='max-sm:ml-2'>
                 <Breadcrumbs route={route}></Breadcrumbs>
                 </div> 
                 </div> 
@@ -75,14 +75,9 @@ const CNavBar = ({toggleSideNav}:Props) => {
                    <div key={index}>
                       {item}
                    </div>
-                 </>
-                  
-
-                  )
+                 </>)
                 }
-
                 </div>
-
                </div>
 
          <div className='flex items-center justify-center gap-4'>

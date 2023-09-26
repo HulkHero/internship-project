@@ -167,8 +167,10 @@ const userLogin = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ msg: "Please enter all fields" })
         }
-        console.log(email, password, "email, password")
         const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.status(400).json({ msg: "Invalid Credentials" })
+        }
         if (password == user.password) {
             const buf = crypto.randomBytes(6);
             let randomString = buf.toString('utf-8');
@@ -184,9 +186,11 @@ const userLogin = async (req, res) => {
             }
             const signedToken = await signToken(user, randomString);
             return res.status(200).json({ user: { ...user, token: signedToken } })
+        } else {
+            return res.status(400).json({ msg: "Invalid Credentials" })
         }
     } catch (err) {
-        return res.status(400).json({ msg: "Invalid Credentials" })
+        return res.status(400).json({ msg: "Something went wrong" })
     }
 }
 
@@ -358,6 +362,45 @@ const changeSystemRole = async (req, res) => {
     }
 }
 
+const editNames = async (req, res) => {
+    try {
+        const { firstName, lastName, _id } = req.body
+        const companyName = req.companyName;
+
+        if (firstName && lastName) {
+            console.log(firstName, lastName, _id, companyName, "firstName, lastName, _id, companyName")
+            const updatedUser = await User.findOneAndUpdate({ _id: _id, companyName: companyName }, { firstName: firstName, lastName: lastName }, { new: true }).lean().exec()
+            if (updatedUser) {
+                return res.status(200).json({ data: updatedUser })
+            }
+        }
+        else {
+            return res.status(400).json({ msg: "Please enter all fields" })
+        }
+
+    }
+    catch (err) {
+        return res.status(500).json({ msg: "something went wrong" })
+
+    }
+}
+
+const getCompanyName = async (req, res) => {
+    try {
+        const companyName = req.params.companyName;
+        const company = await User.findOne({ companyName: companyName }).lean().exec();
+        console.log(company, "company")
+        if (company) {
+            return res.status(200).json({ companyName: companyName })
+        }
+        return res.status(200).json({ companyName: null })
+    }
+    catch (err) {
+        return res.status(500).json({ msg: "something went wrong" })
+
+    }
+}
+
 module.exports = {
     addUser,
     userLogin,
@@ -368,4 +411,6 @@ module.exports = {
     logout,
     getPaginatedUsers,
     changeSystemRole,
+    editNames,
+    getCompanyName
 }

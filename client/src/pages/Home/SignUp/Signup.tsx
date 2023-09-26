@@ -4,11 +4,18 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { addUser, userSelector } from "../../../redux/slices/userSlice";
 import { userSignUp } from '../../../types';
+import CustomInput from '../../../components/CustomInput';
+import { emailSimple, passwordValidation, textValidation } from '../../../utils/InputValidations';
+import CustomButton from '../../../components/CustomButton';
+import axios from 'axios';
+import { Slide, ToastContainer, toast } from 'react-toastify';
 
 
 const Signup = () => {
     const dispatch = useAppDispatch();
     const user = useAppSelector(userSelector);
+    const [selectedTier, setSelectedTier] = React.useState<string>("basic");
+    const [loading, setLoading] = React.useState<boolean>(false);
     const form = useForm<userSignUp>({
         defaultValues: {
             firstName: "",
@@ -23,22 +30,37 @@ const Signup = () => {
     const { register, handleSubmit, formState } = form;
     const { errors } = formState;
     const onSubmit =async (data: userSignUp) =>{
-        dispatch(addUser(data));
-        sessionStorage.setItem("user",JSON.stringify(data));
+        setLoading(true);
+       
+
+        const res= await axios.get(`http://localhost:5000/user/getCompanyName/${data.companyName}`)
+        console.log(res.data.companyName,"res.data")
+        if(res.status===200&&res.data.companyName){
+            toast.error("Company Name already exists")
+            setLoading(false);
+            return
+        }
+        const newData={
+            ...data,
+            tier:selectedTier
+        }
+    
+        dispatch(addUser(newData));
+        sessionStorage.setItem("user",JSON.stringify(newData));
 
         const stripe = await loadStripe('pk_test_51Nj141DOsxvBXmWQhvQUIY7jmKLOVUSr8IimWuKhCmTjNTbKqxi3AJmmZfU8dPPbjHrTvqCFVvdLTfw6iTvoh4Is001jA7RoYU');
         let item={};
-        if(data.tier==="basic"){
+        if(selectedTier==="basic"){
         item={
           name:"basic",
-          price:15,
+          price:150,
         }
             }
         else
         {
             item={
                 name:"premium",
-                price:30,
+                price:300,
             }
         }
     
@@ -59,140 +81,55 @@ const Signup = () => {
         const session=await stripe?.redirectToCheckout({
           sessionId:result.id
         })
+        setLoading(false);
         if(session?.error){
-          console.log(session.error.message,"session.error.message");
+          console.log(session?.error.message,"session.error.message");
         }
     }
     
-    
-
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 shadow-md rounded-md w-96">
+        <div className="min-h-screen  flex flex-col sm:flex-row justify-center items-center gap-10 text-white text-opacity-80 bg-dark">
+            <div className='w-full'>
+          <div className='text-center max-[600px]:mt-2  text-4xl text-white font-bold'>Welcome to <span className='text-primary'>Assess Pro</span></div>
+            </div>
+            <div className="w-full bg-ligtDark p-4 shadow-md rounded-md">
                 <div className="text-3xl font-bold mb-4">Signup</div>
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                    <div className="space-y-4">
-                        <div className="flex space-x-2">
-                            <label htmlFor="firstName" className="w-1/3 flex items-center justify-end font-semibold">
-                                First Name
-                            </label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                {...register("firstName",{
-                                    required:"First Name is required",
-                                    validate:(value)=>value.trim().length>3
-                                })}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p>{errors.firstName?.message}</p>
-
+                    <div className="space-y-1">
+                        <div className='flex justify-between gap-5 '>
+                        <CustomInput<userSignUp> type="text" title='First Name' placeholder='Enter Your Name' register={register} rules={textValidation("First Name")} name="firstName" errors={errors?.firstName} ></CustomInput>
+                         <CustomInput<userSignUp> type="text" title='Last Name' placeholder='Enter Your Name' register={register} rules={textValidation("Last Name")} name="lastName" errors={errors.lastName} ></CustomInput>
                         </div>
-                        <div className="flex space-x-2">
-                            <label htmlFor="lastName" className="w-1/3 flex items-center justify-end font-semibold">
-                                Last Name
-                            </label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                {...register("lastName",{
-                                    required:"Last Name is required",
-                                    validate:(value)=>value.trim().length>3
-                                })}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p>{errors.lastName?.message}</p>
-                        </div>
-                        <div className="flex space-x-2">
-                            <label htmlFor="email" className="w-1/3 flex items-center justify-end font-semibold">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                {...register("email",{
-                                    required:"Email is required",
-                                    pattern:{
-                                         //eslint-disable-next-line
-                                        value:  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                        message: "Invalid email format",
-                                    }
-                                })}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p>{errors.email?.message}</p>
-                        </div>
-                        <div className="flex space-x-2">
-                            <label htmlFor="password" className="w-1/3 flex items-center justify-end font-semibold">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                {...register("password",{
-                                    required:"Password is required",
-                                    validate:(value)=>value.trim().length>6
-                                })}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p>{errors.password?.message}</p>
-                        </div>
-                        <div className="flex space-x-2">
-                            <label htmlFor="companyName" className="w-1/3 flex items-center justify-end font-semibold">
-                                Company Name
-                            </label>
-                            <input
-                                type="text"
-                                id="companyName"
-                                {...register("companyName",{
-                                    required:"Company Name is required",
-                                    validate:(value)=>value.trim().length>3}
-                                        
-                                )}
-                                className="border rounded p-2 w-2/3"
-                            />
-                            <br></br>
-                            <p>{errors.companyName?.message}</p>
-                        </div>
-                        <div className="flex space-x-2">
-                            <label htmlFor="tier" className="w-1/3 flex items-center justify-end font-semibold">
-                                Tier
-                            </label>
-                            <select id="tier" {...register("tier")} className="border rounded p-2 w-2/3">
-                                <option value="basic">Basic $15</option>
-                                <option value="premium">Premium $30</option>
-                            </select>
-                        </div>
-                        <div className='flex justify-evenly '>
-                            <div className='min-h-[50px] bg-slate-200 p-4'>
+                        <CustomInput<userSignUp> type="email" title='Email' placeholder='Enter Your Email' register={register} rules={emailSimple()} name="email" errors={errors.email} ></CustomInput>
+                        <CustomInput<userSignUp> type="password" title='Password' placeholder='Enter Your Password' register={register} rules={passwordValidation()} name="password" errors={errors.password} ></CustomInput>
+                        <CustomInput<userSignUp> type="text" title='Company Name' placeholder='Enter Your Company Name' register={register} rules={textValidation("Company Name")} name="companyName" errors={errors.companyName} ></CustomInput>
+                        <div className='flex justify-evenly py-2'>
+                            <div onClick={()=>setSelectedTier("basic")} className={`${selectedTier ==="basic"?"bg-brightRed ring-2 ring-darkRed":"bg-darkRed "}  min-h-[50px] rounded-md shadow-md p-4 cursor-pointer`}>
                                 <h1> Basic </h1>
-                                <h1> 5 managers </h1>
-                                <h1> 10 employees </h1>
-                                <h1> costs : 15$ </h1>
+                                <h1> 15 managers </h1>
+                                <h1> 50 employees </h1>
+                                <h1> costs : 150$ </h1>
 
                             </div>
-                            <div className=' min-h-[50px] bg-slate-200 p-4'>
+                            <div onClick={()=>setSelectedTier("premium")} className={` ${selectedTier ==="premium"?"bg-brightRed ring-2 ring-darkRed":"bg-darkRed "}  min-h-[50px] bg-brigRed rounded-md shadow-md p-4 cursor-pointer`}>
                                 <h1> Premium </h1>
-                                <h1> 15 managers </h1>
-                                <h1> 30 employees </h1>
-                                <h1> costs : 30$ </h1>
+                                <h1> 30 managers </h1>
+                                <h1> 100 employees </h1>
+                                <h1> costs : 300$ </h1>
                             </div>
                            
                         </div>
-                        <div className="flex justify-center">
-                            <button
+                        <div className="flex justify-center mt-4">
+                            <CustomButton
                                 type="submit"
-                                className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-                            >
-                                checkout
-                            </button>
+                                text="Go to Payment"
+                                isLoading={loading}
+                                className="btn btn-primary btn-sm btn-wide"
+                            />
                         </div>
                     </div>
                 </form>
+            <ToastContainer theme={'colored'} transition={Slide}></ToastContainer>
             </div>
         </div>
     );

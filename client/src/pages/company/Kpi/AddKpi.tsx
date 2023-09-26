@@ -1,14 +1,14 @@
-
 import axiosInstance from '../../../utils/interceptor'
 import Inputs from './Inputs'
 import { useState} from 'react'
-import { useForm ,useFieldArray } from 'react-hook-form'
+import { useForm ,useFieldArray,} from 'react-hook-form'
 import { useAppSelector } from '../../../redux/hooks'
 import { authSelector } from '../../../redux/slices/authSlice'
 import openModal from '../../../utils/handleModal'
 import Modal from '../../../components/Modal'
 import CustomInput from '../../../components/CustomInput'
 import { IForm,SForm } from './types'
+import { toast } from 'react-toastify'
 
 
 const AddKpi = () => {
@@ -34,7 +34,6 @@ const AddKpi = () => {
 
     const onSubmit=(data:IForm)=>{
         const weightage=getValues("kpis").reduce((acc,curr)=>acc+curr.kpiWeight,0)
-        console.log(weightage,"submission")
         if(weightage!==100){
             setErr("Total weightage should be 100")
             return
@@ -51,17 +50,36 @@ const AddKpi = () => {
             }],
            })
         }).catch((err)=>{
-            setModalErr(err.response?.data.msg)
+            const errorMessage=err.response?.data.msg? err.response.data.msg:err.message 
+            setModalErr(errorMessage||"Something went wrong")
             openModal("error")
         })
 
     }
     
-    const [toggle,setToggle]=useState(fields[0].id)
+    const [toggle,setToggle]=useState<string>(fields[0].id)
 
     const toggleForm=(index:string)=>{
         setToggle(index)
     }  
+
+    const handleAdd=()=>{
+        const kpilen=getValues("kpis").length
+        if(kpilen>12){
+            toast.info("Max 12 Kpis are allowed")
+        }
+        else{
+            append({kpiName:"",kpiWeight:0,kpiThreshold:0})
+        }
+    }
+    const handleDelete=({id,index}:{id:string,index:string|number})=>{
+        
+        remove(index as number)
+        let indexes=(index as number) -1
+        let id1=fields[indexes]?.id
+        setToggle(String(id1))
+
+    }
   return (
     <div className=' space-y-3 p-3'>
         <Modal variant='success' title="Kpi Added" description="Kpi Added Successfully" />
@@ -79,11 +97,11 @@ const AddKpi = () => {
                     {err && <p className="text-red-500">{err}</p>}
                 </div>
                 <div className='flex my-3'>
-                    <div className="flex ">
+                    <div className="flex flex-wrap">
                         {
                         fields.map((item,index)=>{
                             return(
-                                   <div className='relative flex'>
+                                   <div className='relative flex flex-wrap'>
                                    { errors?.kpis &&  errors.kpis[index] ? <span className='absolute top-2 left-2 h-2 w-2 rounded-full bg-red-700  '/>:null}
                                    <button type={"button"} onClick={(e)=>{e.stopPropagation(); toggleForm(item.id)}} className={`btn ${ toggle===item.id?"btn-primary":"bg-gray-300"} btn-circle`}>Kpi</button>
                                 </div>
@@ -92,13 +110,13 @@ const AddKpi = () => {
                  }
                 </div>
                 <div>
-                    <button type='button' className='ml-2 px-3 py-1 bg-gray-300 rounded-xl'  onClick={(e)=>{e.stopPropagation(); append({kpiName:"",kpiWeight:0,kpiThreshold:0})}}>+</button>
+                    <button type='button' className='ml-2 px-3 py-1 bg-gray-300 rounded-xl'  onClick={handleAdd}>+</button>
                 </div>
                 </div>
                 {
                     fields.map((item,index)=>{
                         return(
-                            <Inputs key={item.id} id={item.id} toggle={toggle}  index={index} remove={remove} register={register} errors={errors}  />
+                            <Inputs key={item.id} id={item.id}  toggle={toggle} index={index} handleDelete={handleDelete} register={register} errors={errors}  />
                         )
                     })
                 }

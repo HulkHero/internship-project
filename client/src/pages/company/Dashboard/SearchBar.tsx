@@ -63,7 +63,11 @@ const SearchBar = ({handleSubmit}: Props) => {
                       <option key={index} value={role}>{role}</option>
                     )
                   })
-                }  
+                }{
+                  isLoading ?<span className='loading-dots'>Loading</span>
+                  :isError?<span className='text-red-500'>Error Fetching Roles</span>
+                  :null
+                } 
            </select> 
         </div>
            <button type="submit" className="btn btn-primary btn-sm">Submit</button>

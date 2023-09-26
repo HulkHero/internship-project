@@ -9,24 +9,17 @@ import { IChat, IReceivedMessage, ISendMessage } from './types';
 
 
 const Chat = () => {
-      const socket=useSocket()    
+      const {socket,isSocketInitialized}=useSocket() 
+         
+      console.log(socket,"socket")
     const user=useAppSelector(authSelector)
-    const [chats, setChats] = useState<IChat[]|undefined>([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [currentChat, setCurrentChat] = useState<IChat|null>(null);
     const [sendMessage, setSendMessage] = useState<ISendMessage|null>(null);
     const [receivedMessage, setReceivedMessage] = useState<IReceivedMessage|null>(null);
 
-    const {data,isLoading,isError,error}=useFetchChats<IChat[]>(user._id)
-    useEffect(() => {
-      if (data){
-        setChats(data);
-      }
-    }, [data]);
-   
-    useEffect(() => {
+    const {data:chats,isLoading,isError,error}=useFetchChats<IChat[]>(user._id)
 
-    }, [socket]);
     useEffect(() => {
       
       if(socket){
@@ -34,7 +27,6 @@ const Chat = () => {
           setOnlineUsers(users);
         });
       }
-      
       }, [user,socket]);
       
     useEffect(() => {
@@ -53,8 +45,9 @@ const Chat = () => {
 
   return (
      <div className="w-full flex justify-left   ">
-        <SideBar chats={chats}  setChats={setChats} isLoading={isLoading} onlineUsers={onlineUsers} user={user } currentChat={currentChat } setCurrentChat={setCurrentChat} />
-       
+      {isError?<div>Error Fetching Chats</div>
+        :<SideBar chats={chats} isLoading={isLoading} onlineUsers={onlineUsers} user={user } currentChat={currentChat } setCurrentChat={setCurrentChat} />
+  }
        {currentChat? <ChatRoom 
           chat={currentChat}
           currentUser={user._id}

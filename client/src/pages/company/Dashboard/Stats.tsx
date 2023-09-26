@@ -2,24 +2,26 @@ import { useQuery } from '@tanstack/react-query'
 import React from 'react'
 import axiosInstance from '../../../utils/interceptor'
 import Skeleton from '../../../components/Skeleton'
+import { AxiosError } from 'axios'
 
 const Stats = () => {
 
-    const {data, isLoading, isError} = useQuery(['stats'], () => {
+    const {data, isLoading, isError,error} = useQuery(['stats'], () => {
         return axiosInstance.get('/dashboard/stats')
     }, {
         select: (data) => data.data.data
     })
-    console.log(data)
     
   return (
     <div className='flex justify-center gap-20 my-3'>
     
     <div className='flex  flex-wrap max-sm:gap-2 justify-center sm:gap-10  md:gap-15 lg:gap-20 my-3'>
-    {isLoading ?<><Skeleton variant='box'></Skeleton>
+    {isLoading ?
+      <><Skeleton variant='box'></Skeleton>
                <Skeleton variant='box'></Skeleton>
-               <Skeleton variant='box'></Skeleton></>:null}
-    {data &&
+               <Skeleton variant='box'></Skeleton></>:
+    isError?<div>Error: {error instanceof AxiosError? error.response?.data.msg ? error.response.data.msg:error.message  :"something went wrong" }</div>        
+    :
     <>
   <div className="stats shadow-md min-w-[200px] bg-gradient-to-r from-fuchsia-600 to-pink-600">
   <div className="stat">

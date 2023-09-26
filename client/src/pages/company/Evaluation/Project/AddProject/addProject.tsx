@@ -68,7 +68,10 @@ const AddProject: React.FC = () => {
       });
     },
     onError:(err:AxiosError<MutationError>)=>{
-        toast.error(err.response?.data.msg||"Something went wrong");
+
+        const errorMessage=err.response?.data.msg? err.response.data.msg:err.message 
+        
+        toast.error(errorMessage||"Something went wrong");
     }
   });
 

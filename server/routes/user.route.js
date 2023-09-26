@@ -22,8 +22,8 @@ router.get("/checkEmail/:email", User.checkEmail);
 
 router.post('/logout', authentication, User.logout);
 
-router.get('/hello', authentication, authorization.adminAuthz, (req, res) => {
-    res.status(200).json({ msg: "hello" })
-});
 router.put("/changeSystemRole", authentication, authorization.adminAuthz, User.changeSystemRole);
+router.put("/editNames", authentication, authorization.adminAuthz, User.editNames);
+
+router.get("/getCompanyName/:companyName", User.getCompanyName)
 module.exports = { userRouter: router }

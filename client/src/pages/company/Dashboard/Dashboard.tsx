@@ -59,7 +59,7 @@ const Dashboard = () => {
         <Skeleton variant="4charts"></Skeleton>
                       </>
         :isError?  (
-          <div>Error: {error instanceof AxiosError? error.response?.data.msg :"Something Went Wrong"}</div>
+          <div>Error: {error instanceof AxiosError? error.response?.data.msg?error.response.data.msg:error.message :"Something Went Wrong"}</div>
         ) 
          :data ? <GridLayout evaluation={data.evaluation as Evaluation[]}></GridLayout>:<div>no evaluations found</div>}
    

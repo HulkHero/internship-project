@@ -75,16 +75,6 @@ const DataGrid =<T extends {}>({ data, columns }: Props<T>) => {
                             {header.column.getIsSorted() === 'desc' && '🔽'}
                       </div>
                     )}
-                    {/* {!header.isPlaceholder && header.column.getCanPin() && (
-                      <div className=''>
-                        <button
-                          onClick={()=>header.column.pin("left")}
-                          className={`${header.column.getIsPinned()?"table-pin-cols ":""} btn btn-secondary btn-sm`}
-                        >
-                          {header.column.getIsPinned() ? 'Unpin' : 'Pin'}
-                        </button>
-                      </div>
-                    )} */}
                   </th>
                 );
               })}

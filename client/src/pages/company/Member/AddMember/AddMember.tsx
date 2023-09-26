@@ -44,7 +44,8 @@ const AddMember = () => {
                 reset()
             },
             onError:(err:AxiosError<MutationError>)=>{
-                setError(err.response?.data.msg||"something went wrong")
+                const errorMessage=err.response?.data.msg? err.response.data.msg:err.message 
+                setError(errorMessage||"something went wrong")
                 openModal("error")
             }
         })
@@ -106,8 +107,9 @@ const AddMember = () => {
                                     })
                                 }
                                 </select>
-                                {isLoading && <p>Loading...</p>}
-                                {isError && <p className='text-red-500'>Error fetching Roles</p>}
+                                {isLoading ? <p>Loading...</p>
+                                :isError ?<p className='text-red-500'>Error fetching Roles</p>:null
+                               }
                             <br></br>
                             <p className='text-red-500'>{errors.techRole?.message}</p>
                         </div>

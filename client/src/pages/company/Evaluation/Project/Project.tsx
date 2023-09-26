@@ -39,7 +39,7 @@ const Project = () => {
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
-  <div>Error: {error instanceof AxiosError ? error.message : 'An error occurred'}</div>
+<div>Error: {error instanceof AxiosError? error.response?.data.msg ? error.response.data.msg:error.message  :"something went wrong" }</div>
 ) : (
     <DataGrid data={data.data} columns={dataColumns}></DataGrid>
 )}

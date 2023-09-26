@@ -1,14 +1,13 @@
 import React from 'react'
-
 import 'react-toastify/dist/ReactToastify.css';
-
-
 import {calulateRemainingTime }from '../../../../utils/remainingTime';
 import CountDownUi from '../../../../components/CountDownUi';
+interface Props{
+  time:number
+}
 
-
-const Day15Evaluation = () => {
-  const [timeRemaining, setTimeRemaining] = React.useState<number>(calulateRemainingTime(15)); // [timeRemaining, setTimeRemaining
+const TimeCounter = ({time}:Props) => {
+  const [timeRemaining, setTimeRemaining] = React.useState<number>(calulateRemainingTime(time)); 
 
   const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -34,4 +33,4 @@ const Day15Evaluation = () => {
   )
 }
 
-export default Day15Evaluation
+export default TimeCounter

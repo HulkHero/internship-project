@@ -32,7 +32,7 @@ const MemberCard = (props:Props ) => {
                 userId:props.member._id,
                 techRole:props.member.techRole,
                 type:'project'
-            })}` }} className={`btn btn-primary ${disable===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>Evaluate</Link>
+            })}` }} className={`btn btn-primary ${disable===true ?"pointer-events-none opacity-60 ":""} btn-xs px-4`}>{props.isEvaluated===true?"Done":props.inProgress===true?"InProgress":"Evaluate"}</Link>
         </div>
     </div>
   )

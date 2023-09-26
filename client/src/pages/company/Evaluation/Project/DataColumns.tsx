@@ -70,5 +70,11 @@ export  const dataColumns = [
           return <>{row.row.original.projectManager.firstName} {row.row.original.projectManager.lastName}</>
   
       }
-      },
+      },{
+         header:"Details",
+         accessorKey:"details",
+         cell:(props:CellContext<Project,unknown>)=>(
+            <Link to={`/company/evaluation/${props.row.original._id}`} className='btn btn-primary btn-xs' >details</Link>
+          ),
+      }
   ]

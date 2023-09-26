@@ -11,7 +11,7 @@ interface Props{
     chats:IChat[]|undefined,
     currentChat:IChat|null,
     setCurrentChat:React.Dispatch<React.SetStateAction<IChat|null>>,
-    setChats:React.Dispatch<React.SetStateAction<IChat[]|undefined>>,
+
     user:User,
     onlineUsers:userId[],
     isLoading:boolean,
@@ -26,7 +26,7 @@ interface Option {
 
 }
 
-const SideBar =({chats,onlineUsers,currentChat,setCurrentChat,user,setChats,isLoading}:Props) => {
+const SideBar =({chats,onlineUsers,currentChat,setCurrentChat,user,isLoading}:Props) => {
   const kueryClient = useQueryClient();
 
   const [options, setOptions] = React.useState<Option[]|null>(null);

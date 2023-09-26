@@ -31,13 +31,15 @@ const Breadcrumbs = ({ route }:{route:string}) => {
   }).filter((breadcrumb) => breadcrumb !== null);
 
   return (
-    <ul className="flex gap-2">
+    <div className="breadcrumbs max-[400px]:max-w-[200px]">
+    <ul className="space-x-2">
     {breadcrumbs.map((breadcrumb, index) => (
-      <li className="text-sm breadcrumbs bg-ligtDark px-3 py-2 rounded-xl" key={index}>
+      <li className="text-sm bg-ligtDark px-3 py-2 rounded-xl" key={index}>
         <Link className="hover:underline" to={breadcrumb?.href||""}>{breadcrumb?.label}</Link>
       </li>
     ))}
   </ul>
+  </div>
   );
 };
 

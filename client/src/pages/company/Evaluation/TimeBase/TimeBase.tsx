@@ -2,10 +2,10 @@ import React from 'react'
 import { useEvaluationUsers } from '../../../../ReactKueries/PaginatedEUsers'
 import  CustomButton  from '../../../../components/CustomButton'
 import DataGrid from '../../../../components/DataGrid'
-import Day15Evaluation from './15DayEvaluation'
-import Day30Evaluation from './Day30Evaluation'
 import { User, dataColumns} from './dataColumns'
 import SearchFilter from '../../../../components/SearchFilter'
+import { AxiosError } from 'axios'
+import TimeCounter from './TimeCounter'
 
 
 const TimeBase = () => {
@@ -43,13 +43,13 @@ const TimeBase = () => {
             <div>
               15 Day Evaluation:
             </div>
-           <Day15Evaluation/>
+           <TimeCounter time={15}/>
           </div>
           <div>
             <div>
               30 Day Evaluation:
             </div>
-            <Day30Evaluation/>
+            <TimeCounter time={30}/>
           </div>
         
        </div>
@@ -59,14 +59,13 @@ const TimeBase = () => {
         {isLoading ? (
   <span className=' loading loading-dots w-28'></span>
 ) : isError ? (
-  <div>Error: {error instanceof Error ? error.message : 'An error occurred'}</div>
+  <div>Error: {error instanceof AxiosError? error.response?.data.msg ? error.response.data.msg:error.message  :"something went wrong" }</div>
 ) : (
     <DataGrid<User> data={data.data} columns={dataColumns}></DataGrid>
 )}
       </div>
       
       <div className='flex-grow-0 flex justify-center'>
-
       <CustomButton
         text={"<"}
         className='btn btn-primary btn-sm'
@@ -78,12 +77,11 @@ const TimeBase = () => {
       <CustomButton
             text={">"}
             className='btn btn-primary btn-sm '
-        onClick={() => {
-          if (!isPreviousData && data.hasMore) {
-            setPage(old => old + 1)
-          }
+            onClick={() => {
+                if (!isPreviousData && data.hasMore) {
+                setPage(old => old + 1)
+            }
         }}
-        
         disabled={isPreviousData || !data?.hasMore}
       />
     </div>

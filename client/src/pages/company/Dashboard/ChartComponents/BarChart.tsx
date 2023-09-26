@@ -6,11 +6,9 @@ BarElement,
 PointElement,
 Tooltip,
 Legend,
-
 CategoryScale,
 LinearScale,
 
-ChartData,
 ChartDataset
 } from 'chart.js'
 
@@ -33,13 +31,7 @@ const BarChart = ({evaluation}: Props) => {
       backgroundColor: backgroundColors,
       borderColor: borderColors,
       borderWidth: 1,
-
-      // borderColor: borderColors[0],
-      // pointBackgroundColor: backgroundColors[0],
-      // pointBorderColor:borderColors[0],
-   
     }]
-
   } ;
  
 
@@ -55,12 +47,6 @@ const BarChart = ({evaluation}: Props) => {
             max:100
         }
       }
-
-    
-    
-
-    
-
   }
 
 
