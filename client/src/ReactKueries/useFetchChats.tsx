@@ -1,8 +1,4 @@
-import {
-    useQuery,
-    useMutation,
-    useQueryClient,
-  } from '@tanstack/react-query'
+import {useQuery} from '@tanstack/react-query'
 import axiosInstance from '../utils/interceptor'
 
 const FetchChats=<T extends {}>(_id:string)=>{

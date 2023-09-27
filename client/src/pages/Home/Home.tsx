@@ -1,14 +1,23 @@
 import React from 'react'
 import NavBar from '../../components/NavBar'
-import { useAppDispatch ,useAppSelector } from "../../redux/hooks";
-import { addUser, authSelector } from '../../redux/slices/authSlice';
+
+
+import Footer from './Footer';
+
+
+import Hero from './Hero';
+
+import Features from './Features';
 
 const Home = () => {
-  const auth = useAppSelector(authSelector);
-  const dispatch = useAppDispatch();
+
   return (
-    <div className='h-screen bg-white'>
+    <div className=' bg-white'>
         <NavBar></NavBar>
+        <Hero></Hero>
+
+        <Features></Features>        
+        <Footer></Footer>
     </div>
 
   )

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { loadStripe } from '@stripe/stripe-js';
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { addUser, userSelector } from "../../../redux/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "../../../state/redux/hooks";
+import { addUser, userSelector } from "../../../state/redux/slices/userSlice";
 import { userSignUp } from '../../../types';
 import CustomInput from '../../../components/CustomInput';
 import { emailSimple, passwordValidation, textValidation } from '../../../utils/InputValidations';
@@ -29,6 +29,7 @@ const Signup = () => {
 
     const { register, handleSubmit, formState } = form;
     const { errors } = formState;
+
     const onSubmit =async (data: userSignUp) =>{
         setLoading(true);
        
@@ -63,8 +64,6 @@ const Signup = () => {
                 price:300,
             }
         }
-    
-           
         const header={
           "Content-Type":"application/json"
         }
@@ -76,8 +75,6 @@ const Signup = () => {
         })
         const result=await response.json();
 
-
-         console.log(result,"result")
         const session=await stripe?.redirectToCheckout({
           sessionId:result.id
         })

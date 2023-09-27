@@ -5,8 +5,8 @@ import axiosInstance from '../../../../../utils/interceptor'
 import MemberCard from './MemberCard'
 import { ProjectMember } from './types'
 import { AxiosError } from 'axios'
-import { useAppSelector } from '../../../../../redux/hooks'
-import { authSelector } from '../../../../../redux/slices/authSlice'
+import { useAppSelector } from '../../../../../state/redux/hooks'
+import { authSelector } from '../../../../../state/redux/slices/authSlice'
 
 
 const DetailPage = () => {

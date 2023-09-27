@@ -38,7 +38,7 @@ const Modal = ({variant,title,description,buttonText,linkPath,linkText,goBack}: 
       return (
         <>
         {/* Open the modal using document.getElementById('ID').showModal() method */}
-    <dialog id="error" className="modal modal">
+    <dialog id="error" className=" modal">
       <div className="modal-box">
         <h3 className="font-bold text-lg text-error">{title}</h3>
         <p className="py-4">{description}</p>

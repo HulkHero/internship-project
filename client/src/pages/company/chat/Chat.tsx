@@ -1,10 +1,10 @@
 import React,{useState,useEffect} from 'react'
 import SideBar from './SideBar'
 import ChatRoom from './ChatRoom'
-import { useAppSelector } from '../../../redux/hooks';
-import { authSelector } from '../../../redux/slices/authSlice';
+import { useAppSelector } from '../../../state/redux/hooks';
+import { authSelector } from '../../../state/redux/slices/authSlice';
 import { useFetchChats } from '../../../ReactKueries/useFetchChats';
-import { useSocket } from '../../../redux/context';
+import { useSocket } from '../../../state/context';
 import { IChat, IReceivedMessage, ISendMessage } from './types';
 
 

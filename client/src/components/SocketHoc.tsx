@@ -2,8 +2,8 @@
 import React, { useEffect, useRef } from 'react';
 import io, { SocketOptions } from 'socket.io-client';
 import {Socket} from 'socket.io-client';
-import { useAppSelector } from '../redux/hooks';
-import { authSelector } from '../redux/slices/authSlice';
+import { useAppSelector } from '../state/redux/hooks';
+import { authSelector } from '../state/redux/slices/authSlice';
 export interface SocketHOCProps {
     socket: Socket;
 }

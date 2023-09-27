@@ -13,7 +13,7 @@ interface Props{
     setCurrentChat:React.Dispatch<React.SetStateAction<IChat|null>>,
 
     user:User,
-    onlineUsers:userId[],
+    onlineUsers:string[],
     isLoading:boolean,
 }
 
@@ -73,7 +73,7 @@ const SideBar =({chats,onlineUsers,currentChat,setCurrentChat,user,isLoading}:Pr
 
   const checkOnlineStatus = (chat:IChat) => {
     const chatMember = chat.members.find((member:member) => member._id !== user._id);
-    const online = onlineUsers.find((user:userId) => user.userId === chatMember?._id);
+    const online = onlineUsers.find((user:string) => user === chatMember?._id);
     return online ? true : false;
   };
   

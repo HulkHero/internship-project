@@ -1,7 +1,7 @@
 import React from 'react'
 import { useChangeRole } from '../../../ReactKueries/PaginatedUsers'
-import { useAppSelector } from '../../../redux/hooks'
-import { authSelector } from '../../../redux/slices/authSlice'
+import { useAppSelector } from '../../../state/redux/hooks'
+import { authSelector } from '../../../state/redux/slices/authSlice'
 
 type Props = {
     systemRole:string

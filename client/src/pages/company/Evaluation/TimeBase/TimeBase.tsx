@@ -38,7 +38,7 @@ const TimeBase = () => {
   return (
     <div className='pb-5'>
        <SearchFilter title='Members' select={false} handleSearch={handleSearch}/>
-       <div className='flex flex-row justify-around my-2'>
+       <div className='flex  flex-col sm:flex-row justify-around my-2'>
           <div>
             <div>
               15 Day Evaluation:

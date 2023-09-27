@@ -16,7 +16,7 @@ const TimeCounter = ({time}:Props) => {
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setTimeRemaining(calulateRemainingTime(15));
+      setTimeRemaining(calulateRemainingTime(time));
     }, 1000);
     return () => clearInterval(interval);
   }, [timeRemaining]);

@@ -9,7 +9,6 @@ type Props = {
 }
 
 const SmallCard = (props: Props) => {
-    console.log(props,"inside small Card")
   return (
     <div className='w-full' >
         <div className='p-2 bg-blue-100 w-full  cursor-pointer hover:bg-darkRed hover:text-white rounded-lg'>

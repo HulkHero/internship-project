@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAppDispatch, } from "../../../redux/hooks";
-import { addUser,} from "../../../redux/slices/authSlice";
+import { useAppDispatch, } from "../../../state/redux/hooks";
+import { addUser,} from "../../../state/redux/slices/authSlice";
 import { MutationError,} from '../../../types';
 import axios, { AxiosError } from 'axios';
 import CustomInput from '../../../components/CustomInput';

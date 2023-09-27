@@ -2,8 +2,8 @@ import React from 'react'
 import { ProjectMember } from './types'
 import CustomButton from '../../../../../components/CustomButton'
 import { Link, createSearchParams } from 'react-router-dom'
-import { authSelector } from '../../../../../redux/slices/authSlice'
-import { useAppSelector } from '../../../../../redux/hooks'
+import { authSelector } from '../../../../../state/redux/slices/authSlice'
+import { useAppSelector } from '../../../../../state/redux/hooks'
 interface Props extends ProjectMember{
     inProgress:boolean
     projectId:string

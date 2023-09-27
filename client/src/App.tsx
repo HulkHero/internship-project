@@ -11,7 +11,7 @@ import AddProject from './pages/Company/Evaluation/Project/AddProject/addProject
 import Dashboard from './pages/Company/Dashboard/Dashboard';
 import Chat from './pages/Company/chat/Chat';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import ProtectedRoute from './ProtectRoute';
+import ProtectedRoute from './utils/ProtectRoute';
 import Member from './pages/Company/Member/Member';
 import LayoutMember from './pages/Company/Member/LayoutMember';
 import LayoutEvaluation from './pages/Company/Evaluation/LayoutEvaluation';
@@ -22,9 +22,9 @@ import Evaluate from './components/Evaluate/Evaluate';
 import '/node_modules/react-grid-layout/css/styles.css'
 import '/node_modules/react-resizable/css/styles.css'
 
-import { SocketProvider } from './redux/context';
+import { SocketProvider } from './state/context';
 import TimeBase from './pages/Company/Evaluation/TimeBase/TimeBase';
-import AuthZProtect from './AuthZProtect';
+import AuthZProtect from './utils/AuthZProtect';
 const queryClient = new QueryClient()
 
 // const SocketCompany=withSocket(Chat)

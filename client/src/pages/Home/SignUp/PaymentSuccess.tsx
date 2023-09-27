@@ -1,6 +1,6 @@
 import React from 'react'
-import {  useAppSelector } from "../../../redux/hooks";
-import { userSelector } from "../../../redux/slices/userSlice";
+import {  useAppSelector } from "../../../state/redux/hooks";
+import { userSelector } from "../../../state/redux/slices/userSlice";
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { userSignUp } from '../../../types';

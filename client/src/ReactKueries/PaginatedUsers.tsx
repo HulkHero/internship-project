@@ -76,7 +76,7 @@ export const useChangeRole = () => {
         
 
         },
-        onError: (error, {setSelectedOption,page,_id,systemRole},context) => {
+        onError: (error, {page},context) => {
 
             queryClient.setQueryData(['paginatedUsers',page], context?.oldData)
           

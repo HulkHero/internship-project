@@ -1,8 +1,8 @@
 import React from 'react';
 import {  useForm } from 'react-hook-form';
 import  { AxiosError } from 'axios';
-import { useAppSelector } from '../../../../redux/hooks';
-import { authSelector } from '../../../../redux/slices/authSlice';
+import { useAppSelector } from '../../../../state/redux/hooks';
+import { authSelector } from '../../../../state/redux/slices/authSlice';
 import axiosInstance from '../../../../utils/interceptor';
 import {AiOutlineUserAdd} from "react-icons/ai"
 import CustomInput from '../../../../components/CustomInput';
