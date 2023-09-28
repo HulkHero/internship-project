@@ -89,7 +89,7 @@ const AddMember = () => {
                         </div>
                         <div className="mb-3 sm:w-1/2">
                             <label htmlFor="techRole" className="block font-bold">
-                                Tech Role
+                                Tech Role <span className='text-sm font-light'>Add techRole in kpis first before using</span>
                             </label>
                             <select
                                 id="techRole"

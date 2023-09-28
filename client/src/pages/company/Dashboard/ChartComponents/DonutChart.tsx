@@ -6,10 +6,6 @@ ArcElement,
 PointElement,
 Tooltip,
 Legend,
-
-// CategoryScale,
-// LinearScale,
-
 ChartData,
 ChartDataset
 } from 'chart.js'

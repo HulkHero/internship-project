@@ -88,14 +88,11 @@ const getPaginatedUsers = async (req, res) => {
             ];
         }
 
-        // Fetch users with pagination
         const users = await User.find(matchQuery)
             .skip(skip)
             .limit(limit)
             .exec();
 
-
-        // Fetch evaluations for users within the specified date ranges
         const userIds = users.map(user => user._id);
 
         const currentDate = new Date();
