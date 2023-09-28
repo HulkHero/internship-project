@@ -73,7 +73,7 @@ const EvaluateCard = ({projectId,techRole,employeeId,type}: Props) => {
   return (
     <div className='w-full rounded-md md:w-[80%] shadow-md  mx-auto '>
      {isLoading ?<div className=' w-full h-[80vh] flex items-center justify-center'><span className='loading loading-dots w-[100px]' ></span></div>:
-     isError?<div className='w-full flex items-center justify-center'>Error: {error instanceof AxiosError? error?.response?.data.msg:"something went wrong"}</div>:null}
+     isError?<div>{error instanceof AxiosError? error.response?.data.msg?error.response.data.msg:error.message :"Something Went Wrong"}</div>:null}
     {kpis && kpis.length>0 ?<div className=' bg-white rounded-md text-gray-900  sm:min-h-[80%] flex flex-col justify-between sm:justify-start sm:h-fit '>
     <div>
     <div className='bg-brightRed p-3 shadow-md '>

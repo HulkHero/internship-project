@@ -49,7 +49,7 @@ const checkEmail = async (req, res) => {
         return res.status(200).send([user._id])
     }
     else {
-        return res.status(200).send({ msg: "No user found" })
+        return res.status(400).send({ msg: "No user found" })
     }
 
 }

@@ -1,7 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react'
 import { useParams,useSearchParams } from 'react-router-dom'
-import axiosInstance from '../../utils/interceptor';
 import EvaluateCard from './EvaluateCard';
 
 

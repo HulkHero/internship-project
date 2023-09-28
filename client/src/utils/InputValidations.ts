@@ -46,15 +46,20 @@ export const emailValidation =()=> {
             },
             validate:{
                 unikue:async(value:string)=> {
-                       //sends rekuest only when email is valid                  
-                        const res=await axios.get(`http://localhost:5000/user/checkEmail/${value}`)
-                        console.log(res.data)
-                        if(res?.data?.length>0)
-                        {
-                         return (`Email already exists` )
-                        }else{
+                       //sends rekuest only when email is valid       
+                       try{
+                           const res=await axios.get(`http://localhost:5000/user/checkEmail/${value}`)
+                           console.log(res.data)
+                           if(res.data?.length>0)
+                           {
+                           return (`Email already exists` )
+                            }
+                            else{
+                            }           
     
-                        }  
+                        }catch(err){
+                            console.log(err)
+                        } 
                                     
                 }
             }
