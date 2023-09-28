@@ -1,4 +1,4 @@
-import React,{memo} from 'react'
+
 import { FieldError,FieldValues,UseFormRegister,UseControllerProps, Path } from 'react-hook-form';
 interface Props<T extends FieldValues> extends UseControllerProps<T> {
     title:string,
@@ -26,4 +26,4 @@ const CustomInput =<T extends {}> (props:Props<T>) => {
   )
 }
 
-export default memo(CustomInput) as typeof CustomInput;
+export default CustomInput ;

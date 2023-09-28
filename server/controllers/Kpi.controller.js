@@ -20,7 +20,7 @@ const addKpi = async (req, res) => {
         const response = await kpi.save();
         return res.status(200).json({ msg: response });
     } catch (err) {
-        return res.status(500).json({ msg: err.message });
+        return res.status(500).json({ msg: "Something went Wrong" });
     }
 }
 
@@ -32,7 +32,7 @@ const getRoles = async (req, res) => {
 
 
     } catch (err) {
-        return res.status(500).json({ msg: err.message });
+        return res.status(500).json({ msg: "Something went Wrong" });
     }
 }
 

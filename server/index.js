@@ -12,7 +12,7 @@ const { dashboardRouter } = require("./routes/dashboard.route");
 const { notificationRouter } = require("./routes/notification.route");
 const { addNotification, remove } = require("./controllers/Notification.controller");
 require('dotenv').config();
-const stripe = require('stripe')('sk_test_51Nj141DOsxvBXmWQCtDMZyeOlTOtsuDaI2nyz4up6j1YG4nKEvM6SF29Wi0sobNyTich0CStl4iBBC23gvBKyLPc00NX0Rtxnm');
+
 const io = require("socket.io")(8800, {
     cors: {
         origin: "http://localhost:3000",
@@ -107,40 +107,6 @@ cron.schedule('0 0 16,1 * *', () => {
 })
 
 app.use(express.static('public'));
-
-
-app.post('/create-checkout-session', async (req, res) => {
-    const item = req.body;
-    console.log(req.body)
-
-    const line_items = [
-        {
-            'price_data': {
-                'currency': "usd",
-                'product_data': {
-                    'name': item.name,
-                },
-                'unit_amount': item.price * 100,
-            },
-            'quantity': 1,
-        }
-    ]
-
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: line_items,
-        mode: 'payment',
-        success_url: `http://localhost:3000/signup/success`,
-        cancel_url: `http://localhost:3000/signup`,
-    });
-    if (!session) {
-        res.status(500).send({ error: "Something went wrong" })
-    }
-
-    res.json({ id: session.id });
-
-
-});
 
 
 app.get("/", (req, res) => {

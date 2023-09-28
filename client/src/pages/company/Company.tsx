@@ -1,8 +1,9 @@
 import React from 'react'
-import CNavBar from '../../components/CNavBar'
+import CompanyNavBar from '../../components/CompanyNavBar'
 import { Outlet } from 'react-router-dom'
 import SideNav from '../../components/SideNav'
 import { ToastContainer,Slide } from 'react-toastify'
+
 const Company = () => {
   const [sideNav,setSideNav]=React.useState(false)
   const toggleSideNav=()=>{
@@ -11,7 +12,7 @@ const Company = () => {
 
   return (
     <div>
-      <CNavBar toggleSideNav={toggleSideNav}/>
+      <CompanyNavBar toggleSideNav={toggleSideNav}/>
       <div className='flex flex-row overflow-x-hidden'>
           <SideNav sideNav={sideNav} ></SideNav>
        <ToastContainer theme={'colored'} transition={Slide}/>

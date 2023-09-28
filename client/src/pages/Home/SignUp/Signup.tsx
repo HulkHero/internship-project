@@ -9,6 +9,7 @@ import { emailSimple, passwordValidation, textValidation } from '../../../utils/
 import CustomButton from '../../../components/CustomButton';
 import axios from 'axios';
 import { Slide, ToastContainer, toast } from 'react-toastify';
+import HomeButton from './HomeButton';
 
 
 const Signup = () => {
@@ -68,7 +69,7 @@ const Signup = () => {
           "Content-Type":"application/json"
         }
         console.log(item,"item");
-        const response=await fetch("http://localhost:5000/create-checkout-session",{
+        const response=await fetch("http://localhost:5000/user/payment",{
           method:"POST",
           headers:header,
           body:JSON.stringify(item)
@@ -86,13 +87,16 @@ const Signup = () => {
     
     return (
         <div className="min-h-screen  flex flex-col sm:flex-row justify-center items-center gap-10 text-white text-opacity-80 bg-dark">
-            <div className='w-full'>
+           <div className='absolute bg-lightDark shadow-md hover:bg-darkRed p-1 rounded-md  top-5 left-7'>
+           <HomeButton></HomeButton>
+           </div>
+         <div className='w-full max-sm:pt-14'>
           <div className='text-center max-[600px]:mt-2  text-4xl text-white font-bold'>Welcome to <span className='text-primary'>Assess Pro</span></div>
             </div>
             <div className="w-full bg-ligtDark p-4 shadow-md rounded-md">
                 <div className="text-3xl font-bold mb-4">Signup</div>
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                    <div className="space-y-1">
+                    <div className="space-y-3">
                         <div className='flex justify-between gap-5 '>
                         <CustomInput<userSignUp> type="text" title='First Name' placeholder='Enter Your Name' register={register} rules={textValidation("First Name")} name="firstName" errors={errors?.firstName} ></CustomInput>
                          <CustomInput<userSignUp> type="text" title='Last Name' placeholder='Enter Your Name' register={register} rules={textValidation("Last Name")} name="lastName" errors={errors.lastName} ></CustomInput>
@@ -129,7 +133,5 @@ const Signup = () => {
             <ToastContainer theme={'colored'} transition={Slide}></ToastContainer>
             </div>
         </div>
-    );
-    };
-
+    )};
 export default Signup;

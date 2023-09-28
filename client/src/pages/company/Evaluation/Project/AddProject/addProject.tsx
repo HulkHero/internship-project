@@ -5,7 +5,7 @@ import { textLongValidation, textValidation } from '../../../../../utils/InputVa
 import  { ActionMeta, GroupBase } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import axiosInstance from '../../../../../utils/interceptor';
-import { toast,ToastContainer } from 'react-toastify';
+import { toast, } from 'react-toastify';
 import CustomButton from '../../../../../components/CustomButton';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -25,7 +25,7 @@ const CustomOption: React.FC<CustomOptionProps<IOption, true, GroupBase<IOption>
 const AddProject: React.FC = () => {
 
   const [options, setOptions] = useState<{value:string}[]>([]);
-
+  const [error,setError]=useState<string>("")
   const form = useForm<IAddProject>({
       defaultValues: {
         projectName: "",
@@ -37,17 +37,19 @@ const AddProject: React.FC = () => {
       }
   }); 
 
-  const { register, handleSubmit, formState, getValues ,reset,setError} = form;
+  const { register, handleSubmit, formState, getValues ,reset,} = form;
   const { errors, } = formState;
 
 
   const onSubmit = async (data: IAddProject) => {
+    console.log(options)
     if(options.length<2)
     {
-     setError("projectMembers",{message:"Please select atleast two member"})
+     setError("Please select atleast two member")
      toast.error("Please select atleast two member");
       return;
     }
+    setError("")
    const bodyData={
      ...data,
      projectMembers:options.map((option)=>option.value)
@@ -80,7 +82,6 @@ const AddProject: React.FC = () => {
   }  
   return (
     <div className='p-3 ' >
-      <ToastContainer></ToastContainer>
         <div>
             <h1 className='text-2xl text-center text-textDark font-bold'>Add Project</h1>
         </div>
@@ -95,11 +96,15 @@ const AddProject: React.FC = () => {
                 <div>
                   <CustomInput<IAddProject> title="Team Name" name="teamName" type={"text"} placeholder='Enter Team Name'  register={register} rules={textValidation("Team Name")} errors={errors.teamName}/>
                 </div>
+                <div className='flex flex-col sm:flex-row sm:gap-10 '>
+                  <div className='sm:w-1/2'>
                 <CustomInput<IAddProject> title="Start Date" name="projectStartDate" type={"date"} placeholder='Enter Project Manager'  register={register} rules={{
                     valueAsDate:true,
                     required:"Project Start Date is required"
                 }} errors={errors.projectStartDate}/> 
-           <CustomInput<IAddProject> title="End Date" name="projectEndDate" type={"date"} placeholder='Enter Project End Date'  register={register} rules={{
+                </div>
+                <div className='sm:w-1/2'>
+                <CustomInput<IAddProject> title="End Date" name="projectEndDate" type={"date"} placeholder='Enter Project End Date'  register={register} rules={{
                     valueAsDate:true,
                     validate:{
                         range:(v:Date)=>{
@@ -112,6 +117,8 @@ const AddProject: React.FC = () => {
                     },
                     required:"Project End Date is required"
                 }} errors={errors.projectEndDate}/> 
+             </div>   
+             </div>
             <div>
               <label className='font-bold text-md'>Team Members</label>
               <AsyncSelect<IOption, true, GroupBase<IOption>>
@@ -122,7 +129,7 @@ const AddProject: React.FC = () => {
                   isMulti={true}
                   loadOptions={fetchOptions<IOption>}
                       />
-              {errors.projectMembers && <p className="text-red-700">{errors.projectMembers.message}</p>}
+            <p className="text-red-700">{error}</p>
             </div>
             <div className='my-2'>
             <CustomButton text="Submit" disabled={isLoading} className={'btn-primary'} isLoading={isLoading} type="submit" />

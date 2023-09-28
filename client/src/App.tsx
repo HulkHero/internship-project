@@ -29,8 +29,6 @@ const queryClient = new QueryClient()
 
 // const SocketCompany=withSocket(Chat)
 
-
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -56,7 +54,6 @@ function App() {
             <Route path=":_id/evaluate" element={<Evaluate></Evaluate>}/>
             <Route path="addProject" element={<AddProject/>}/>
             <Route path="timeBase" element={<TimeBase/>}/>
-          
         </Route>
         <Route path="chat" element={<Chat/>} />
     </Route>

@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const User = require("../models/User.model");
 const signToken = require("../helpers/signToken").signToken;
 const Evaluation = require("../models/Evaluation.model");
+const stripe = require('stripe')("sk_test_51Nj141DOsxvBXmWQCtDMZyeOlTOtsuDaI2nyz4up6j1YG4nKEvM6SF29Wi0sobNyTich0CStl4iBBC23gvBKyLPc00NX0Rtxnm");
 
 const addUser = async (req, res) => {
     const { firstName, lastName, email, password, techRole, systemRole, companyName } = req.body;
@@ -9,7 +10,6 @@ const addUser = async (req, res) => {
     if (!firstName || !lastName || !email || !password || !techRole || !systemRole) {
         return res.status(400).json({ msg: "Please enter all fields" });
     }
-
     if (systemRole !== "admin" && systemRole !== "employee" && systemRole !== "manager") {
         return res.status(400).json({ msg: "Please enter a valid systemRole" });
     }
@@ -36,7 +36,7 @@ const addUser = async (req, res) => {
             }
         })
     }).catch(err => {
-        return res.status(400).json({ msg: "Oops,something went wrong" });
+        return res.status(500).json({ msg: "Oops,something went wrong" });
     })
 }
 
@@ -139,8 +139,6 @@ const getPaginatedUsers = async (req, res) => {
 
 
         const totalCount = await User.countDocuments(matchQuery);
-
-        // Calculate hasMore
         const hasMore = ((page + 1) * limit) < totalCount;
 
         res.status(200).json({
@@ -190,7 +188,7 @@ const userLogin = async (req, res) => {
             return res.status(400).json({ msg: "Invalid Credentials" })
         }
     } catch (err) {
-        return res.status(400).json({ msg: "Something went wrong" })
+        return res.status(500).json({ msg: "Something went wrong" })
     }
 }
 
@@ -229,7 +227,7 @@ const userSignup = async (req, res) => {
             }
         })
     }).catch(err => {
-        return res.status(400).json({ msg: "Failed" });
+        return res.status(500).json({ msg: "Failed" });
     })
 }
 
@@ -341,7 +339,7 @@ const logout = async (req, res) => {
         }
     }
     catch (err) {
-        return res.status(400).json({ msg: "Failed to logout" })
+        return res.status(500).json({ msg: "Failed to logout" })
     }
 }
 
@@ -358,7 +356,7 @@ const changeSystemRole = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        return res.status(400).json({ msg: "Failed to change system role" })
+        return res.status(500).json({ msg: "Failed to change system role" })
     }
 }
 
@@ -401,6 +399,47 @@ const getCompanyName = async (req, res) => {
     }
 }
 
+const payment = async (req, res) => {
+    try {
+
+
+        const item = req.body;
+        console.log(req.body)
+
+        const line_items = [
+            {
+                'price_data': {
+                    'currency': "usd",
+                    'product_data': {
+                        'name': item.name,
+                    },
+                    'unit_amount': item.price * 100,
+                },
+                'quantity': 1,
+            }
+        ]
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: line_items,
+            mode: 'payment',
+            success_url: `http://localhost:3000/signup/success`,
+            cancel_url: `http://localhost:3000/signup`,
+        });
+        if (!session) {
+            res.status(500).send({ error: "Something went wrong" })
+        }
+
+        res.json({ id: session.id });
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ error: "Something went wrong" })
+    }
+
+
+
+}
+
 module.exports = {
     addUser,
     userLogin,
@@ -412,5 +451,6 @@ module.exports = {
     getPaginatedUsers,
     changeSystemRole,
     editNames,
-    getCompanyName
+    getCompanyName,
+    payment: payment
 }

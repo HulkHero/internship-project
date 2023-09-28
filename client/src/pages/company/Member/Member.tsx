@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { usePaginatedUsers } from '../../../ReactKueries/PaginatedUsers'
 import  CustomButton  from '../../../components/CustomButton'
@@ -47,7 +47,7 @@ const Member = () => {
        <SearchFilter title='Members' select={false}  handleSearch={handleSearch}/>
         <div >
             <div className='ml-auto w-fit m-2  '>
-                <Link to="/company/member/addMember" className='btn btn-secondary btn-sm btn-outline'>Add Member</Link>
+                <Link to="/company/member/addMember" className='btn btn-primary btn-sm btn-outline'>Add Member</Link>
             </div>
         </div>
         <div className='flex flex-col '>

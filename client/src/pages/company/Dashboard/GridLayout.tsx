@@ -1,12 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import RadarChart from "./ChartComponents/RadarChart";
-import { Evaluation, Kpis } from "./types";
+import { Evaluation, } from "./types";
 import LineChart from "./ChartComponents/LineChart";
-import Bar from "./SearchBar";
+
 import BarChart from "./ChartComponents/BarChart";
 import DonutChart from "./ChartComponents/DonutChart";
 
@@ -44,11 +42,6 @@ const layouts = {
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const GridLayout = ({evaluation}:Props) => {
-  if(evaluation?.length===0){
-    return <div>no evaluations found</div>
-  }
-
-
  
   return (
     <ResponsiveGridLayout
@@ -56,10 +49,6 @@ const GridLayout = ({evaluation}:Props) => {
       layouts={layouts}
       breakpoints={{ lg: 1200, md: 700, sm: 400, xs: 300, xxs: 0 }}
       cols={{ lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 }}
-      onBreakpointChange={(newBreakpoint:string,newCols:number)=>{
-        console.log(newBreakpoint,newCols)
-        console.log("breakpoint changed")
-      }}
       rowHeight={350}
     >
 

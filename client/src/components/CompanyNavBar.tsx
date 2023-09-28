@@ -12,7 +12,7 @@ interface Props{
   toggleSideNav:()=>void
 }
 
-const CNavBar = ({toggleSideNav}:Props) => {
+const CompanyNavBar = ({toggleSideNav}:Props) => {
 
     const data=useAppSelector(authSelector)
     const [route, setRoute] = React.useState<string>("");
@@ -27,7 +27,6 @@ const CNavBar = ({toggleSideNav}:Props) => {
 
 
     const handleLogout=async()=>{
-
         axiosInstance.post("/user/logout").then((res)=>{
           dispatch(logOut());
           navigate("/login");
@@ -68,4 +67,4 @@ const CNavBar = ({toggleSideNav}:Props) => {
   )
 }
 
-export default CNavBar
+export default CompanyNavBar

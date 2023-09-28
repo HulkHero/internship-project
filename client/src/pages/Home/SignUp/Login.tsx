@@ -11,6 +11,7 @@ import openModal from '../../../utils/handleModal';
 import Modal from '../../../components/Modal';
 import React, { useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
+import HomeButton from './HomeButton';
 
 
 interface ILogin {
@@ -63,6 +64,9 @@ const Login = () => {
   }
   return (
     <div className='bg-dark h-screen text-white text-opacity-80 flex flex-col sm:flex-row justify-center items-center gap-10'>
+       <div className='absolute bg-lightDark shadow-md hover:bg-darkRed p-1 rounded-md  top-5 left-7'>
+        <HomeButton></HomeButton>
+       </div>
       <div className='w-full'>
           <div className='text-center text-4xl text-white font-bold'>Welcome to <span className='text-primary'>Assess Pro</span></div>
       </div>

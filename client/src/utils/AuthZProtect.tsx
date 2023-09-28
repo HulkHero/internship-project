@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate,} from 'react-router-dom'
 
 type Props = {
     children: React.ReactNode,
@@ -12,7 +12,7 @@ const AuthZProtect = (props: Props) => {
         return <>{props.children}</>
     }
     else{
-        // no unauthorized access page , redirect to chat
+        
         return <Navigate to="/company/chat" />
     }
 

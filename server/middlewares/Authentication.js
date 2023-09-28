@@ -22,13 +22,10 @@ const authentication = async (req, res, next) => {
         else {
             return res.status(401).json({ msg: "Invalid user" })
         }
-
-
-
     }
 
     else {
-        return res.status(400).send({ msg: "invalid user" })
+        return res.status(500).send({ msg: "invalid user" })
     }
 
 

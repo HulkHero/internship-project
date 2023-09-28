@@ -9,7 +9,10 @@ import Modal from '../../../components/Modal'
 import CustomInput from '../../../components/CustomInput'
 import { IForm,SForm } from './types'
 import { toast } from 'react-toastify'
-
+import { useMutation } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
+import { MutationError } from '../../../types'
+import CustomButton from '../../../components/CustomButton'
 
 const AddKpi = () => {
     const {companyName}=useAppSelector(authSelector)
@@ -32,6 +35,25 @@ const AddKpi = () => {
         control,     
     })
 
+    const {mutate,isLoading}=useMutation((data:SForm)=>axiosInstance.post("/kpi/add",data),{
+        onSuccess:(data)=>{
+            openModal("success")
+            reset({
+             techRole:"",
+             kpis:[{
+                 kpiName:"",
+                 kpiWeight:0,
+                 kpiThreshold:0
+             }]})
+
+        },
+        onError:(err:AxiosError<MutationError>)=>{
+            const errorMessage=err.response?.data.msg? err.response.data.msg:err.message 
+            setModalErr(errorMessage||"Something went wrong")
+            openModal("error")
+        }
+    })
+
     const onSubmit=(data:IForm)=>{
         const weightage=getValues("kpis").reduce((acc,curr)=>acc+curr.kpiWeight,0)
         if(weightage!==100){
@@ -39,21 +61,9 @@ const AddKpi = () => {
             return
         }
         setErr("")
-        axiosInstance.post("/kpi/add",{...data,companyName}as SForm).then((res)=>{
-           openModal("success")
-           reset({
-            techRole:"",
-            kpis:[{
-                kpiName:"",
-                kpiWeight:0,
-                kpiThreshold:0
-            }],
-           })
-        }).catch((err)=>{
-            const errorMessage=err.response?.data.msg? err.response.data.msg:err.message 
-            setModalErr(errorMessage||"Something went wrong")
-            openModal("error")
-        })
+
+        mutate({...data,companyName}as SForm)
+
 
     }
     
@@ -78,7 +88,7 @@ const AddKpi = () => {
         let indexes=(index as number) -1
         let id1=fields[indexes]?.id
         setToggle(String(id1))
-
+        
     }
   return (
     <div className=' space-y-3 p-3'>
@@ -87,7 +97,6 @@ const AddKpi = () => {
         <div className='flex  '>
             <h1 className='font-semibold text-2xl'>Kpi schema</h1>
         </div>
-
         <div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div>
@@ -120,11 +129,10 @@ const AddKpi = () => {
                         )
                     })
                 }
-            <button type="submit" disabled={isSubmitting} className='disabled:loading-dots btn btn-primary btn-sm btn-wide' >Submit</button>
+            <CustomButton text="Submit" type="submit" disabled={isSubmitting} className='btn btn-primary btn-wide btn-sm' isLoading={isLoading} />
             </form>
         </div>
     </div>
   )
 }
-
 export default AddKpi

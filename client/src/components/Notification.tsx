@@ -30,7 +30,6 @@ const Notification = (props: Props) => {
         refetch()
           });
       },[socket])
-      console.log(notification);
   return (
     <div>
     <div>

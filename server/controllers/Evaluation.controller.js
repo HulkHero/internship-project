@@ -40,7 +40,7 @@ const addEvaluation = async (req, res) => {
         }
 
     } catch (err) {
-        return res.status(400).json({ msg: "Failed", err: err.message });
+        return res.status(500).json({ msg: "Something Went Wrong", err: err.message });
     }
 
 

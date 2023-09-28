@@ -36,7 +36,6 @@ const AddMember = () => {
     const { register, handleSubmit, formState,reset } = form;
     const { errors,isDirty,isValid ,isSubmitting} = formState;
 
-
     const {mutate,isLoading:loadingMuation}=useMutation((data:IAddMember)=>axiosInstance.post(`user/addMember/${_id}`,data),
         {
             onSuccess:(data)=>{
@@ -69,8 +68,9 @@ const AddMember = () => {
                         <CustomInput<IAddMember> title={"Last Name"} type={"text"} rules={textValidation("Last Name")} name={`lastName`} placeholder={"Enter Last Name"} errors={errors?.lastName} register={register}/>
                         <CustomInput<IAddMember> title={"Email"} type={"email"} rules={emailValidation()} name={`email`} placeholder={"Enter Email"} errors={errors?.email} register={register}/>
                         <CustomInput<IAddMember> title={"Password"} type={"password"} rules={passwordValidation()} name={`password`} placeholder={"Enter Password"} errors={errors?.password} register={register}/>
-                        <div className="">
-                            <label htmlFor="systemRole" className="w-1/3 flex items-center font-bold">
+                        <div className='flex flex-col sm:flex-row gap-5'>
+                        <div className="mb-3 sm:w-1/2">
+                            <label htmlFor="systemRole" className="block font-bold">
                                 Role
                             </label>
                             <select
@@ -79,7 +79,7 @@ const AddMember = () => {
                                     required:"Role is required",
                                     validate:(value)=>value.trim().length>3}
                                 )}
-                                className="border rounded p-2 w-2/3"
+                                className="w-full border rounded-md text-black mt-1 p-2 focus:outline-none focus:ring focus:border-blue-500"
                             >
                               <option value="manager">Manager</option>
                               <option value="employee">Employee</option>
@@ -87,8 +87,8 @@ const AddMember = () => {
                             <br></br>
                             <p>{errors.systemRole?.message}</p>
                         </div>
-                        <div className="">
-                            <label htmlFor="techRole" className=" flex items-center  font-bold">
+                        <div className="mb-3 sm:w-1/2">
+                            <label htmlFor="techRole" className="block font-bold">
                                 Tech Role
                             </label>
                             <select
@@ -97,7 +97,7 @@ const AddMember = () => {
                                 {...register("techRole",{
                                     required:"tech Role is required",
                                 })}
-                                className="border rounded p-2 w-2/3"
+                                className="w-full border rounded-md text-black mt-1 p-2 focus:outline-none focus:ring focus:border-blue-500"
                             >    
                                 {
                                    roles && roles.map((role:string,index:number)=>{
@@ -112,6 +112,7 @@ const AddMember = () => {
                                }
                             <br></br>
                             <p className='text-red-500'>{errors.techRole?.message}</p>
+                        </div>
                         </div>
                         <div className="flex justify-center text-white pb-10 ">
                             <CustomButton text="Add Member" type="submit" className='btn-primary btn-wide btn-sm' disabled={!isDirty|| !isValid} isLoading={isSubmitting ||loadingMuation} icon={<AiOutlineUserAdd size={"1rem"} className='fill-white stroke-2 stroke-slate-400'/>}></CustomButton>

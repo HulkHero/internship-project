@@ -37,7 +37,15 @@ body {
 
 .Toastify__toast--error {
   background: #F50000 !important;
+  color:white !important;
 
 }
+.Toastify__toast--error .toast-icon {
+  color: white !important;
+}
 
+.Toastify__toast--error .toast-loader {
+
+  color: white !important;
+}
 

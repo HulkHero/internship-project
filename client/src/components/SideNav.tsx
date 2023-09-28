@@ -10,7 +10,6 @@ interface Props {
 }
 
 const SideNav: React.FC<Props> = ({ sideNav }: Props) => {
-  const user = JSON.parse(localStorage.getItem('user') || '');
   const [openENavs, setOpenENavs] = React.useState(false);
   const [one, setOne] = React.useState(true);
   const [isEActive, setIsEActive] = React.useState(false);
@@ -58,7 +57,6 @@ const SideNav: React.FC<Props> = ({ sideNav }: Props) => {
             </>
 
         ) : null}
-
         <NavLink to="/company/chat" className={({isActive})=> isActive? 'bg-darkRed pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-95': ' hover:bg-black hover:bg-opacity-20 pl-2 py-1 rounded-lg rounded-r-none text-md font-semibold opacity-80 hover:opacity-95'}>Chat</NavLink>
       </div>
     </div>

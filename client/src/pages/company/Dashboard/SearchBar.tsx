@@ -1,12 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import axiosInstance from '../../../utils/interceptor'
-import OptionTypeBase, { GroupBase, OptionProps,} from 'react-select'
+import OptionTypeBase, { GroupBase,} from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { fetchOptions } from '../../../utils/fetchOptionsDebounce'
 import CustomOption from '../../../components/ReactSelect'
+import DateRangePicker from '@wojtekmaj/react-daterange-picker';
+import '@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import { customStyles } from '../../../components/reactSelectCustomStyles'
+
+
+
+
+type ValuePiece = Date | null;
+export type Value = ValuePiece | [ValuePiece, ValuePiece];
 type Props = {
-  handleSubmit:(e:React.FormEvent<HTMLFormElement>)=>void
+  handleSubmit:(e:React.FormEvent<HTMLFormElement>,value:Value)=>void
 }
 interface IOption extends OptionTypeBase {
   value: string;
@@ -16,7 +26,8 @@ interface IOption extends OptionTypeBase {
 
 
 const SearchBar = ({handleSubmit}: Props) => {
-
+  const [value, onChange] = useState<Value>([null, null]);
+   
   const {data:roles,isError,isLoading}=useQuery(['getRoles'],()=>{
     return axiosInstance.get('/kpi/get')
   },{
@@ -25,9 +36,8 @@ const SearchBar = ({handleSubmit}: Props) => {
 
 
 
-
   return (
-    <form onSubmit={handleSubmit} >
+    <form onSubmit={(e)=>handleSubmit(e,value)} >
     <div className='flex flex-wrap max-[400px]:flex-col items-center justify-between max-w-full mx-4 p-2 bg-brightRed rounded-lg'>
         <div className='max-[400px]:my-2 max-[400px]:min-w-[150px]'>
             <AsyncSelect<IOption, false, GroupBase<IOption>>
@@ -40,6 +50,8 @@ const SearchBar = ({handleSubmit}: Props) => {
                 classNames={{
                   control: (state) =>state.isFocused ? ' min-w-[150px] max-w-[250px]  outline-none ' : 'min-w-[150px] max-w-[250px] outline-none border-grey-300',
                   }}
+                  styles={customStyles}
+                
                 />
             <div>
         </div>
@@ -69,6 +81,12 @@ const SearchBar = ({handleSubmit}: Props) => {
                   :null
                 } 
            </select> 
+
+        </div>
+        <div>
+        <DateRangePicker name='dateRange' onChange={onChange} value={value}  maxDate={new Date()} 
+        className='bg-white'
+         />
         </div>
            <button type="submit" className="btn btn-primary btn-sm">Submit</button>
 

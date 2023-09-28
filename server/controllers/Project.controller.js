@@ -41,7 +41,7 @@ const addProject = async (req, res) => {
         }
     }
     catch (err) {
-        return res.status(400).json({ msg: "Failed", err: err });
+        return res.status(500).json({ msg: "Failed", err: err });
     }
 
 }
@@ -52,8 +52,8 @@ const getPaginatedProjects = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const selectedValue = req.query.selected;
         const searchInput = req.query.search;
-        const skip = (page) * limit; // Adjusted skip calculation
-        const companyName = req.companyName; // Assuming you have a company name in the request
+        const skip = (page) * limit;
+        const companyName = req.companyName;
         let matchStage = {
             companyName: companyName
         };
@@ -120,7 +120,6 @@ const getPaginatedProjects = async (req, res) => {
             }
         ]);
 
-        // const total = await Project.countDocuments({ companyName: companyName });
         const hasMore = (page + 1) * limit < total;
 
         return res.status(200).json({
